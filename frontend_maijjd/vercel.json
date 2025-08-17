@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://api.maijjd.com/api/$1"
+    }
+  ]
+}
+
+
