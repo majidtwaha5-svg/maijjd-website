@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Maijd Software Suite - Premium Dashboard{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-features.css') }}">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Stripe.js for payment processing -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="{{ url_for('index') }}" class="text-2xl font-bold text-blue-600">
+                            <i class="fas fa-cube mr-2"></i>Maijd
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                        </a>
+                        <div class="relative">
+                            <button class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                                <i class="fas fa-user mr-1"></i>{{ current_user.email }}
+                            </button>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-sign-in-alt mr-1"></i>Login
+                        </a>
+                        <a href="{{ url_for('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-user-plus mr-1"></i>Sign Up
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                {% for category, message in messages %}
+                    <div class="rounded-md p-4 mb-4 {% if category == 'error' %}bg-red-50 border border-red-200 text-red-700{% elif category == 'success' %}bg-green-50 border border-green-200 text-green-700{% else %}bg-blue-50 border border-blue-200 text-blue-700{% endif %}">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                {% if category == 'error' %}
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                {% elif category == 'success' %}
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle text-blue-400"></i>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium">{{ message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Maijd Software Suite</h3>
+                    <p class="text-gray-600 text-sm">
+                        Professional software management and development tools for modern teams.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600">Features</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Pricing</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600">Help Center</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Status</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600">About</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Blog</a></li>
+                        <li><a href="#" class="hover:text-blue-600">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-600">
+                    &copy; 2024 Maijd Software Suite. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/enhanced-features.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

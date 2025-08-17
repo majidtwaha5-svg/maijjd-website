@@ -1,0 +1,80 @@
+#!/bin/bash
+# Maijd Software Suite Launcher
+
+MAIJD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+show_help() {
+    echo "Maijd Software Suite v2024.1.0"
+    echo ""
+    echo "Usage: maijd [COMMAND] [OPTIONS]"
+    echo ""
+    echo "Commands:"
+    echo "  list                    - List installed software"
+    echo "  install <category>      - Install software category"
+    echo "  uninstall <category>    - Uninstall software category"
+    echo "  update <category>       - Update software category"
+    echo "  info <category>         - Show software information"
+    echo "  version                 - Show version information"
+    echo "  help                    - Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  maijd list"
+    echo "  maijd install system_software"
+    echo "  maijd update crm_software"
+}
+
+list_installed() {
+    local config_file="$MAIJD_DIR/config/installed_software.json"
+    if [ -f "$config_file" ]; then
+        echo "Installed software:"
+        echo "=================="
+        if command -v jq > /dev/null 2>&1; then
+            jq -r '.installed_software | to_entries[] | "\(.key): \(.value.version)"' "$config_file"
+        else
+            cat "$config_file" | grep -o '"[^"]*":' | sed 's/":$//' | sed 's/^"//'
+        fi
+    else
+        echo "No software installed"
+    fi
+}
+
+case "${1:-help}" in
+    list)
+        list_installed
+        ;;
+    install)
+        if [ -z "$2" ]; then
+            echo "Usage: maijd install <category>"
+            exit 1
+        fi
+        "$MAIJD_DIR/install_maijd_suite.sh" install "$2"
+        ;;
+    uninstall)
+        if [ -z "$2" ]; then
+            echo "Usage: maijd uninstall <category>"
+            exit 1
+        fi
+        "$MAIJD_DIR/install_maijd_suite.sh" uninstall "$2"
+        ;;
+    update)
+        if [ -z "$2" ]; then
+            echo "Usage: maijd update <category>"
+            exit 1
+        fi
+        "$MAIJD_DIR/install_maijd_suite.sh" update "$2"
+        ;;
+    info)
+        if [ -z "$2" ]; then
+            echo "Usage: maijd info <category>"
+            exit 1
+        fi
+        "$MAIJD_DIR/install_maijd_suite.sh" info "$2"
+        ;;
+    version)
+        echo "Maijd Software Suite v2024.1.0"
+        echo "Installation directory: $MAIJD_DIR"
+        ;;
+    help|*)
+        show_help
+        ;;
+esac

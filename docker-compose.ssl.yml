@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Nginx with SSL
+  nginx-ssl:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./ssl/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - maijjd-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    command: >
+      sh -c "nginx -g 'daemon off;'"
+
+  # Certbot for Let's Encrypt renewal
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./ssl/letsencrypt:/etc/letsencrypt
+      - ./ssl:/var/lib/letsencrypt
+    command: renew --quiet
+    depends_on:
+      - nginx-ssl
+    restart: unless-stopped
+
+networks:
+  maijjd-network:
+    external: true

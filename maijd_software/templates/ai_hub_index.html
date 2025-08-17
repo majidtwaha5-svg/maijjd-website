@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maijd AI Software Development Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal.show {
+            display: block;
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+            transform-origin: 50% 50%;
+        }
+        .ai-chat {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .typing-indicator {
+            display: none;
+        }
+        .typing-indicator.show {
+            display: flex;
+        }
+        .project-card {
+            transition: all 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-planning { background-color: #fef3c7; color: #92400e; }
+        .status-design { background-color: #dbeafe; color: #1e40af; }
+        .status-development { background-color: #dcfce7; color: #166534; }
+        .status-testing { background-color: #fef3c7; color: #92400e; }
+        .status-deployment { background-color: #e0e7ff; color: #3730a3; }
+        .status-completed { background-color: #d1fae5; color: #065f46; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="mr-4 text-gray-600 hover:text-gray-800 lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <i class="fas fa-robot text-3xl text-blue-600 mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Maijd AI Hub</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="new-project-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>New Project
+                    </button>
+                    <button id="ai-chat-toggle" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-robot mr-2"></i>AI Chat
+                    </button>
+                    <button class="text-gray-600 hover:text-gray-800 transition-colors">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar fixed left-0 top-16 h-full w-64 bg-white shadow-lg z-40 lg:translate-x-0">
+        <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Navigation</h3>
+            <nav class="space-y-2">
+                <a href="#dashboard" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3 text-blue-600"></i>
+                    Dashboard
+                </a>
+                <a href="#projects" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-project-diagram mr-3 text-green-600"></i>
+                    Projects
+                </a>
+                <a href="#ai-assistants" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-robot mr-3 text-purple-600"></i>
+                    AI Assistants
+                </a>
+                <a href="#team" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-users mr-3 text-orange-600"></i>
+                    Team
+                </a>
+                <a href="#analytics" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chart-bar mr-3 text-red-600"></i>
+                    Analytics
+                </a>
+                <a href="#services" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-cogs mr-3 text-gray-600"></i>
+                    Services
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 pt-16">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white py-20">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <h1 class="text-5xl font-bold mb-6">AI-Powered Software Development</h1>
+                <p class="text-xl mb-8 max-w-3xl mx-auto">
+                    Build, deploy, and manage software projects with AI assistance. 
+                    Everything you need for modern software development - completely free.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <button id="start-building-btn" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-rocket mr-2"></i>Start Building
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        <i class="fas fa-play mr-2"></i>Watch Demo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Project Dashboard</h2>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-lg">
+                                <i class="fas fa-project-diagram text-2xl text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">Total Projects</p>
+                                <p id="total-projects" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-lg">
+                                <i class="fas fa-robot text-2xl text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">AI Assistants</p>
+                                <p id="total-assistants" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-purple-100 rounded-lg">
+                                <i class="fas fa-users text-2xl text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">Team Members</p>
+                                <p id="total-team" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-orange-100 rounded-lg">
+                                <i class="fas fa-chart-line text-2xl text-orange-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">Active Projects</p>
+                                <p id="active-projects" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects Grid -->
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Projects will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section id="services" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Complete Software Development Suite</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Custom Software Development -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-code feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Custom Software Development</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            AI-powered custom software development with full lifecycle management
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Requirements Analysis</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Architecture Design</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Development Tasks</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Progress Tracking</li>
+                        </ul>
+                    </div>
+
+                    <!-- Database Management -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-database feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Database Management</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Comprehensive database design, optimization, and management
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Schema Design</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Performance Optimization</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Data Migration</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Backup & Recovery</li>
+                        </ul>
+                    </div>
+
+                    <!-- System Integration -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-plug feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">System Integration</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Seamless integration with existing systems and third-party services
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>API Development</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Webhook Integration</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Data Synchronization</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Legacy System Support</li>
+                        </ul>
+                    </div>
+
+                    <!-- User Management -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-user-shield feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">User Management</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Comprehensive user authentication, authorization, and management
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Role-Based Access</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Single Sign-On</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>User Analytics</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Security Policies</li>
+                        </ul>
+                    </div>
+
+                    <!-- Analytics & Reporting -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-chart-bar feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Analytics & Reporting</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Advanced analytics, reporting, and business intelligence tools
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Real-time Dashboards</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Custom Reports</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Data Visualization</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Performance Metrics</li>
+                        </ul>
+                    </div>
+
+                    <!-- Security Solutions -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover border border-gray-100">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-shield-alt feature-icon"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Security Solutions</h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Enterprise-grade security and compliance features
+                        </p>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Encryption</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Audit Logging</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Compliance Tools</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Threat Detection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Assistants Section -->
+        <section id="ai-assistants" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">AI Development Assistants</h2>
+                
+                <div id="ai-assistants-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- AI Assistants will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Development Team</h2>
+                
+                <div id="team-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Team members will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Project Analytics</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Project Progress</h3>
+                        <canvas id="progress-chart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Project Status Distribution</h3>
+                        <canvas id="status-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- New Project Modal -->
+    <div id="new-project-modal" class="modal">
+        <div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto mt-20 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Create New Project</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="new-project-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Project Name</label>
+                    <input type="text" id="project-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="project-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="project-category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                            <option value="">Select Category</option>
+                            <option value="web">Web Development</option>
+                            <option value="mobile">Mobile Development</option>
+                            <option value="desktop">Desktop Application</option>
+                            <option value="api">API Development</option>
+                            <option value="database">Database Project</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Timeline (Days)</label>
+                        <input type="number" id="project-timeline" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget</label>
+                    <input type="number" id="project-budget" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" id="cancel-project" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="ai-chat-modal" class="modal">
+        <div class="modal-content bg-white rounded-lg shadow-xl max-w-4xl mx-auto mt-20 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">AI Development Assistant</h3>
+                <button id="close-chat-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="ai-chat bg-gray-50 p-4 rounded-lg mb-4" id="chat-messages">
+                <div class="text-center text-gray-500">
+                    <i class="fas fa-robot text-3xl mb-2"></i>
+                    <p>Ask me anything about software development, project management, or technical questions!</p>
+                </div>
+            </div>
+            
+            <div class="typing-indicator items-center space-x-2 text-gray-500" id="typing-indicator">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                <span class="ml-2">AI is thinking...</span>
+            </div>
+            
+            <form id="chat-form" class="flex space-x-4">
+                <input type="text" id="chat-input" placeholder="Ask your question..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Details Modal -->
+    <div id="project-details-modal" class="modal">
+        <div class="modal-content bg-white rounded-lg shadow-xl max-w-4xl mx-auto mt-20 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800" id="project-details-title">Project Details</h3>
+                <button id="close-project-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="project-details-content">
+                <!-- Project details will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Socket.IO connection
+        const socket = io();
+        
+        // Global variables
+        let projects = [];
+        let aiAssistants = [];
+        let teamMembers = [];
+        
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const newProjectBtn = document.getElementById('new-project-btn');
+        const newProjectModal = document.getElementById('new-project-modal');
+        const closeModal = document.getElementById('close-modal');
+        const cancelProject = document.getElementById('cancel-project');
+        const newProjectForm = document.getElementById('new-project-form');
+        const aiChatToggle = document.getElementById('ai-chat-toggle');
+        const aiChatModal = document.getElementById('ai-chat-modal');
+        const closeChatModal = document.getElementById('close-chat-modal');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        
+        // Event listeners
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('closed');
+        });
+        
+        newProjectBtn.addEventListener('click', () => {
+            newProjectModal.classList.add('show');
+        });
+        
+        closeModal.addEventListener('click', () => {
+            newProjectModal.classList.remove('show');
+        });
+        
+        cancelProject.addEventListener('click', () => {
+            newProjectModal.classList.remove('show');
+        });
+        
+        aiChatToggle.addEventListener('click', () => {
+            aiChatModal.classList.add('show');
+        });
+        
+        closeChatModal.addEventListener('click', () => {
+            aiChatModal.classList.remove('show');
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+        
+        // Form submission
+        newProjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('project-name').value,
+                description: document.getElementById('project-description').value,
+                category: document.getElementById('project-category').value,
+                timeline_days: parseInt(document.getElementById('project-timeline').value),
+                budget: parseFloat(document.getElementById('project-budget').value)
+            };
+            
+            try {
+                const response = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    const newProject = await response.json();
+                    projects.push(newProject);
+                    updateDashboard();
+                    newProjectModal.classList.remove('show');
+                    newProjectForm.reset();
+                    
+                    // Show success message
+                    showNotification('Project created successfully!', 'success');
+                } else {
+                    throw new Error('Failed to create project');
+                }
+            } catch (error) {
+                console.error('Error creating project:', error);
+                showNotification('Failed to create project. Please try again.', 'error');
+            }
+        });
+        
+        // Chat form submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addChatMessage('user', message);
+            chatInput.value = '';
+            
+            // Show typing indicator
+            typingIndicator.classList.add('show');
+            
+            try {
+                // Simulate AI response (replace with actual API call)
+                setTimeout(() => {
+                    const aiResponse = generateAIResponse(message);
+                    addChatMessage('ai', aiResponse);
+                    typingIndicator.classList.remove('show');
+                }, 1500);
+            } catch (error) {
+                console.error('Error getting AI response:', error);
+                typingIndicator.classList.remove('show');
+                addChatMessage('ai', 'Sorry, I encountered an error. Please try again.');
+            }
+        });
+        
+        // Functions
+        function addChatMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-4 ${sender === 'user' ? 'text-right' : 'text-left'}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `inline-block p-3 rounded-lg max-w-xs ${
+                sender === 'user' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white text-gray-800 border border-gray-200'
+            }`;
+            messageBubble.textContent = message;
+            
+            messageDiv.appendChild(messageBubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function generateAIResponse(message) {
+            const responses = [
+                "I can help you with that! Let me analyze your requirements and provide guidance.",
+                "That's a great question about software development. Here's what I recommend...",
+                "Based on your project needs, I suggest implementing the following approach...",
+                "I can assist you with the technical implementation. Let's break this down step by step.",
+                "For optimal performance and scalability, consider these best practices...",
+                "I'll help you design a robust architecture for your software project.",
+                "Let me provide you with some code examples and implementation strategies.",
+                "I can guide you through the development lifecycle and best practices."
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        async function loadProjects() {
+            try {
+                const response = await fetch('/api/projects');
+                if (response.ok) {
+                    projects = await response.json();
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+        
+        async function loadAIAssistants() {
+            try {
+                const response = await fetch('/api/ai-assistants');
+                if (response.ok) {
+                    aiAssistants = await response.json();
+                    updateAIAssistants();
+                }
+            } catch (error) {
+                console.error('Error loading AI assistants:', error);
+            }
+        }
+        
+        async function loadTeamMembers() {
+            try {
+                const response = await fetch('/api/team-members');
+                if (response.ok) {
+                    teamMembers = await response.json();
+                    updateTeam();
+                }
+            } catch (error) {
+                console.error('Error loading team members:', error);
+            }
+            }
+        
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('total-projects').textContent = projects.length;
+            document.getElementById('active-projects').textContent = projects.filter(p => p.status !== 'completed').length;
+            
+            // Update projects grid
+            const projectsGrid = document.getElementById('projects-grid');
+            projectsGrid.innerHTML = '';
+            
+            projects.forEach(project => {
+                const projectCard = createProjectCard(project);
+                projectsGrid.appendChild(projectCard);
+            });
+            
+            // Update charts
+            updateCharts();
+        }
+        
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'project-card bg-white p-6 rounded-xl shadow-lg border border-gray-100 cursor-pointer';
+            card.onclick = () => showProjectDetails(project);
+            
+            const statusClass = `status-${project.status}`;
+            
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">${project.name}</h3>
+                    <span class="status-badge ${statusClass}">${project.status}</span>
+                </div>
+                <p class="text-gray-600 mb-4">${project.description}</p>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm text-gray-500">${project.category}</span>
+                    <span class="text-sm text-gray-500">$${project.budget}</span>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span>${project.progress_percentage}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${project.progress_percentage}%"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-500">
+                    <span>${project.timeline_days} days</span>
+                    <span>${project.team_members.length} members</span>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function updateAIAssistants() {
+            const grid = document.getElementById('ai-assistants-grid');
+            grid.innerHTML = '';
+            
+            aiAssistants.forEach(assistant => {
+                const assistantCard = document.createElement('div');
+                assistantCard.className = 'bg-white p-6 rounded-xl shadow-lg border border-gray-100';
+                
+                assistantCard.innerHTML = `
+                    <div class="text-center mb-4">
+                        <i class="fas fa-robot text-4xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 text-center mb-2">${assistant.name}</h3>
+                    <p class="text-gray-600 text-center mb-4">${assistant.specialization}</p>
+                    <div class="text-center">
+                        <span class="inline-block px-3 py-1 rounded-full text-sm ${
+                            assistant.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }">
+                            ${assistant.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                `;
+                
+                grid.appendChild(assistantCard);
+            });
+            
+            document.getElementById('total-assistants').textContent = aiAssistants.length;
+        }
+        
+        function updateTeam() {
+            const grid = document.getElementById('team-grid');
+            grid.innerHTML = '';
+            
+            teamMembers.forEach(member => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'bg-white p-6 rounded-xl shadow-lg border border-gray-100 text-center';
+                
+                memberCard.innerHTML = `
+                    <div class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fas fa-user text-2xl text-gray-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">${member.name}</h3>
+                    <p class="text-gray-600 mb-2">${member.role}</p>
+                    <p class="text-sm text-gray-500">$${member.hourly_rate}/hr</p>
+                `;
+                
+                grid.appendChild(memberCard);
+            });
+            
+            document.getElementById('total-team').textContent = teamMembers.length;
+        }
+        
+        function updateCharts() {
+            // Progress chart
+            const progressCtx = document.getElementById('progress-chart').getContext('2d');
+            new Chart(progressCtx, {
+                type: 'line',
+                data: {
+                    labels: projects.map(p => p.name),
+                    datasets: [{
+                        label: 'Progress %',
+                        data: projects.map(p => p.progress_percentage),
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Status chart
+            const statusCtx = document.getElementById('status-chart').getContext('2d');
+            const statusCounts = {};
+            projects.forEach(p => {
+                statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
+            });
+            
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            '#fbbf24',
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#8b5cf6',
+                            '#059669'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+        
+        function showProjectDetails(project) {
+            const modal = document.getElementById('project-details-modal');
+            const title = document.getElementById('project-details-title');
+            const content = document.getElementById('project-details-content');
+            
+            title.textContent = project.name;
+            
+            content.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Project Information</h4>
+                        <div class="space-y-2">
+                            <p><strong>Description:</strong> ${project.description}</p>
+                            <p><strong>Category:</strong> ${project.category}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-${project.status}">${project.status}</span></p>
+                            <p><strong>Budget:</strong> $${project.budget}</p>
+                            <p><strong>Timeline:</strong> ${project.timeline_days} days</p>
+                            <p><strong>Progress:</strong> ${project.progress_percentage}%</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Team & AI Assistants</h4>
+                        <div class="space-y-2">
+                            <p><strong>Team Members:</strong> ${project.team_members.length}</p>
+                            <p><strong>AI Assistants:</strong> ${project.ai_assistants.length}</p>
+                            <p><strong>Created:</strong> ${project.created_date}</p>
+                            <p><strong>Updated:</strong> ${project.updated_date}</p>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2 mt-4">Tech Stack</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${project.tech_stack.map(tech => `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">${tech}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-2">Requirements</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-600">
+                        ${project.requirements.map(req => `<li>${req}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            modal.classList.add('show');
+        }
+        
+        // Close project details modal
+        document.getElementById('close-project-modal').addEventListener('click', () => {
+            document.getElementById('project-details-modal').classList.remove('show');
+        });
+        
+        // Initialize the application
+        async function init() {
+            await Promise.all([
+                loadProjects(),
+                loadAIAssistants(),
+                loadTeamMembers()
+            ]);
+        }
+        
+        // Socket.IO event handlers
+        socket.on('project_updated', (data) => {
+            const index = projects.findIndex(p => p.id === data.id);
+            if (index !== -1) {
+                projects[index] = data;
+                updateDashboard();
+            }
+        });
+        
+        socket.on('project_created', (data) => {
+            projects.push(data);
+            updateDashboard();
+        });
+        
+        // Start the application
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

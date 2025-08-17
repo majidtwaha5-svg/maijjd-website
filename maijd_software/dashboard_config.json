@@ -1,0 +1,321 @@
+{
+  "dashboard_enabled": true,
+  "port": 8080,
+  "host": "0.0.0.0",
+  "debug": false,
+  "auto_refresh": true,
+  "refresh_interval": 30,
+  "software_categories": {
+    "ai_software": {
+      "name": "AI Software",
+      "description": "Artificial Intelligence and Machine Learning Tools",
+      "icon": "🤖",
+      "features": [
+        "Natural Language Processing",
+        "Computer Vision",
+        "Machine Learning",
+        "Speech Recognition",
+        "Sentiment Analysis",
+        "Text Generation",
+        "AI Model Training",
+        "Predictive Analytics",
+        "Neural Networks",
+        "Deep Learning",
+        "AI Optimization",
+        "Intelligent Automation",
+        "AI Assistant",
+        "Data Analytics",
+        "Business Intelligence AI"
+      ]
+    },
+    "application_software": {
+      "name": "Application Software",
+      "description": "Business and Productivity Applications",
+      "icon": "💼",
+      "features": [
+        "Office Suite",
+        "ERP System",
+        "Design Studio",
+        "Video Editor",
+        "Collaboration Hub",
+        "Project Management",
+        "Document Management",
+        "Workflow Automation",
+        "Business Intelligence",
+        "Reporting Tools",
+        "Content Management",
+        "Task Management",
+        "Calendar Integration",
+        "Email Management",
+        "File Sharing"
+      ]
+    },
+    "cloud_software": {
+      "name": "Cloud Software",
+      "description": "Cloud Computing and Deployment Solutions",
+      "icon": "☁️",
+      "features": [
+        "Cloud Deployment",
+        "Microservices",
+        "Serverless Computing",
+        "Edge Computing",
+        "Hybrid Cloud",
+        "Container Orchestration",
+        "Auto Scaling",
+        "Load Balancing",
+        "Cloud Monitoring",
+        "Cloud Security",
+        "Data Backup",
+        "Disaster Recovery",
+        "Multi-Region Deployment",
+        "Cloud Cost Optimization"
+      ]
+    },
+    "crm_software": {
+      "name": "CRM Software",
+      "description": "Customer Relationship Management Solutions",
+      "icon": "👥",
+      "features": [
+        "Customer Service",
+        "Sales Management",
+        "Marketing Hub",
+        "Lead Management",
+        "Contact Management",
+        "Pipeline Tracking",
+        "Analytics Dashboard",
+        "Automation Tools",
+        "Integration APIs",
+        "Customer Portal",
+        "Support Ticket System",
+        "Sales Forecasting",
+        "Customer Analytics",
+        "Marketing Automation",
+        "Customer Feedback"
+      ]
+    },
+    "crs_software": {
+      "name": "CRS Software",
+      "description": "Car Rental and Travel Management Systems",
+      "icon": "🚗",
+      "features": [
+        "Car Rental System",
+        "Flight Booking",
+        "Hotel Management",
+        "Travel Planning",
+        "Reservation Management",
+        "Customer Portal",
+        "Payment Processing",
+        "Inventory Management",
+        "Reporting System",
+        "Travel Insurance",
+        "Loyalty Program",
+        "Multi-language Support",
+        "Mobile App Integration",
+        "Real-time Availability",
+        "Dynamic Pricing"
+      ]
+    },
+    "development_software": {
+      "name": "Development Software",
+      "description": "Software Development and Programming Tools",
+      "icon": "💻",
+      "features": [
+        "Development Studio",
+        "Code Editor",
+        "Debugging Tools",
+        "Version Control",
+        "Testing Framework",
+        "Build Automation",
+        "Code Analysis",
+        "Performance Profiling",
+        "Deployment Tools",
+        "API Development",
+        "Database Tools",
+        "Code Review",
+        "Continuous Integration",
+        "DevOps Tools",
+        "Code Quality Metrics"
+      ]
+    },
+    "embedded_software": {
+      "name": "Embedded Software",
+      "description": "Embedded Systems and IoT Solutions",
+      "icon": "🔌",
+      "features": [
+        "Embedded OS",
+        "IoT Framework",
+        "Automotive OS",
+        "Medical Device Software",
+        "Industrial Controller",
+        "Real-time Systems",
+        "Device Management",
+        "Edge Computing",
+        "Sensor Integration",
+        "Firmware Development",
+        "Hardware Abstraction",
+        "Power Management",
+        "Security Protocols",
+        "Remote Monitoring",
+        "Over-the-Air Updates"
+      ]
+    },
+    "programming_software": {
+      "name": "Programming Software",
+      "description": "Programming Language Tools and Frameworks",
+      "icon": "🐍",
+      "features": [
+        "Python Development",
+        "JavaScript Development",
+        "Java Development",
+        "C++ Development",
+        "Go Development",
+        "Code Analysis",
+        "Profiling Tools",
+        "Testing Frameworks",
+        "Documentation Tools",
+        "Package Management",
+        "IDE Integration",
+        "Code Generation",
+        "Refactoring Tools",
+        "Debugging Support",
+        "Performance Optimization"
+      ]
+    },
+    "real_time_software": {
+      "name": "Real-time Software",
+      "description": "Real-time Processing and Control Systems",
+      "icon": "⚡",
+      "features": [
+        "Real-time System",
+        "Streaming Platform",
+        "IoT Platform",
+        "Gaming Engine",
+        "Control System",
+        "Data Processing",
+        "Event Handling",
+        "Performance Monitoring",
+        "Latency Optimization",
+        "Real-time Analytics",
+        "Live Data Processing",
+        "Synchronization",
+        "Time Management",
+        "Resource Allocation",
+        "Fault Tolerance"
+      ]
+    },
+    "scientific_software": {
+      "name": "Scientific Software",
+      "description": "Scientific Computing and Research Tools",
+      "icon": "🔬",
+      "features": [
+        "Scientific Suite",
+        "Data Analysis",
+        "Statistical Modeling",
+        "Simulation Tools",
+        "Research Management",
+        "Publication Tools",
+        "Collaboration Platform",
+        "Data Visualization",
+        "Algorithm Library",
+        "Numerical Computing",
+        "Machine Learning",
+        "Bioinformatics",
+        "Chemistry Tools",
+        "Physics Simulation",
+        "Research Analytics"
+      ]
+    },
+    "system_software": {
+      "name": "System Software",
+      "description": "Operating Systems and System Utilities",
+      "icon": "🖥️",
+      "features": [
+        "OS Pro",
+        "Server OS",
+        "System Optimizer",
+        "Security Suite",
+        "Driver Suite",
+        "System Monitoring",
+        "Performance Tuning",
+        "Backup Tools",
+        "Recovery Tools",
+        "System Maintenance",
+        "Network Management",
+        "Storage Management",
+        "Process Management",
+        "Memory Management",
+        "System Security"
+      ]
+    },
+    "mobile_software": {
+      "name": "Mobile Software",
+      "description": "Mobile Applications and Development Tools",
+      "icon": "📱",
+      "features": [
+        "Mobile App Development",
+        "Cross-platform Apps",
+        "Native iOS Apps",
+        "Native Android Apps",
+        "Mobile UI/UX",
+        "Push Notifications",
+        "Offline Support",
+        "Mobile Analytics",
+        "App Store Management",
+        "Mobile Testing",
+        "Performance Optimization",
+        "Battery Optimization",
+        "Mobile Security",
+        "Location Services",
+        "Mobile Payments"
+      ]
+    },
+    "security_software": {
+      "name": "Security Software",
+      "description": "Cybersecurity and Protection Solutions",
+      "icon": "🔒",
+      "features": [
+        "Threat Detection",
+        "Vulnerability Scanning",
+        "Firewall Management",
+        "Intrusion Prevention",
+        "Data Encryption",
+        "Access Control",
+        "Identity Management",
+        "Security Monitoring",
+        "Incident Response",
+        "Compliance Management",
+        "Penetration Testing",
+        "Security Auditing",
+        "Malware Protection",
+        "Network Security",
+        "Endpoint Protection"
+      ]
+    }
+  },
+  "ai": {
+    "enabled": true,
+    "model_type": "hybrid",
+    "analysis_interval": 300,
+    "optimization_threshold": 0.7,
+    "security_monitoring": true,
+    "performance_tracking": true,
+    "learning_rate": 0.01,
+    "max_concurrent_analysis": 5
+  },
+  "performance": {
+    "monitoring_enabled": true,
+    "metrics_retention_days": 30,
+    "alert_thresholds": {
+      "cpu_usage": 80,
+      "memory_usage": 85,
+      "disk_usage": 90,
+      "response_time": 1000
+    }
+  },
+  "security": {
+    "monitoring_enabled": true,
+    "scan_interval": 3600,
+    "vulnerability_check": true,
+    "compliance_monitoring": true
+  }
+}

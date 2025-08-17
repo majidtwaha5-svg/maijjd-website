@@ -1,0 +1,4 @@
+node_modules/
+frontend_maijjd/build/
+backend_maijjd/.env
+frontend_maijjd/.env

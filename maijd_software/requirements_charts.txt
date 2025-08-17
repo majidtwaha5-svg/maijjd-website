@@ -1,0 +1,19 @@
+# Requirements for Maijd Software Suite Chart Generator
+# Install with: pip install -r requirements_charts.txt
+
+# Core plotting library
+matplotlib>=3.5.0
+
+# Numerical computing
+numpy>=1.21.0
+
+# Additional plotting options (optional)
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Image processing (optional)
+Pillow>=8.3.0
+
+# For better fonts and styling (optional)
+# Note: These may require system-level font installations
+# fonttools>=4.25.0

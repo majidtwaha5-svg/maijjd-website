@@ -1,0 +1,29 @@
+Maijjd Health Check Report
+Generated: Sat Aug  9 08:06:50 CDT 2025
+==================================
+
+System Information:
+OS: Darwin 24.5.0
+Hostname: Mac.attlocal.net
+User: juvenalnahimana
+
+Docker Status:
+Docker: Not available
+
+Node.js Status:
+v22.17.0
+10.9.2
+
+Service Status:
+Unable to get service status
+
+Port Status:
+Port 80: Available
+Port 443: In use by /Users/juvenalnahimana/Library/Developer/CoreSimulator/Devices/F4F78460-91E6-4863-9286-0058B26BED3B/data/Containers/Bundle/Application/2AA3899E-3F4D-448E-A709-E50EFB7D39E1/Exponent-2.33.13.tar.app/Expo Go (PID: 27100)
+Port 3000: In use by /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/138.0.7204.184/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper (PID: 31191)
+Port 3001: Available
+Port 5000: In use by /System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter (PID: 52205)
+Port 5001: In use by node (PID: 52419)
+Port 27017: Available
+Port 6379: Available
+Port 9090: Available

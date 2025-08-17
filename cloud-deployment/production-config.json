@@ -1,0 +1,56 @@
+{
+  "project": {
+    "name": "maijjd-production",
+    "version": "1.0.0",
+    "environment": "production"
+  },
+  "services": {
+    "frontend": {
+      "platform": "vercel",
+      "framework": "react",
+      "buildCommand": "npm run build",
+      "outputDirectory": "build",
+      "environment": "frontend.env"
+    },
+    "backend": {
+      "platform": "railway",
+      "framework": "nodejs",
+      "buildCommand": "npm install",
+      "startCommand": "npm start",
+      "environment": "production.env",
+      "healthCheck": "/api/health"
+    },
+    "database": {
+      "platform": "mongodb-atlas",
+      "type": "mongodb",
+      "version": "7.0",
+      "backup": true,
+      "monitoring": true
+    },
+    "cache": {
+      "platform": "redis-cloud",
+      "type": "redis",
+      "version": "7.0",
+      "persistence": true,
+      "monitoring": true
+    }
+  },
+  "domains": {
+    "frontend": "your-frontend-domain.vercel.app",
+    "backend": "your-backend-domain.railway.app",
+    "custom": "your-custom-domain.com"
+  },
+  "monitoring": {
+    "healthChecks": true,
+    "metrics": true,
+    "logging": true,
+    "alerts": true
+  },
+  "security": {
+    "https": true,
+    "cors": true,
+    "rateLimiting": true,
+    "jwt": true,
+    "helmet": true
+  }
+}

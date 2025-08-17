@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Maijd Software Suite - Professional Software Management{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center mb-16">
+    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+        Professional Software Management
+        <span class="text-blue-600">Made Simple</span>
+    </h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+        Streamline your software development workflow with our comprehensive suite of tools. 
+        From version control to deployment, we've got you covered.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{{ url_for('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition duration-200">
+            <i class="fas fa-rocket mr-2"></i>Get Started Free
+        </a>
+        <a href="#features" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 rounded-lg text-lg font-semibold transition duration-200">
+            <i class="fas fa-play mr-2"></i>Watch Demo
+        </a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="mb-16">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose Maijd?</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center p-6">
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-code text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Advanced Development Tools</h3>
+            <p class="text-gray-600">Professional-grade tools for software development, testing, and deployment.</p>
+        </div>
+        <div class="text-center p-6">
+            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Enterprise Security</h3>
+            <p class="text-gray-600">Bank-level security with role-based access control and audit logging.</p>
+        </div>
+        <div class="text-center p-6">
+            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-chart-line text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Real-time Analytics</h3>
+            <p class="text-gray-600">Monitor performance, track usage, and optimize your workflow.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="mb-16">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Choose Your Plan</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for tier_key, tier_info in pricing_tiers.items() %}
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6 {% if tier_key == 'professional' %}ring-2 ring-blue-500 scale-105{% endif %}">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ tier_info.name }}</h3>
+                <div class="text-3xl font-bold text-gray-900 mb-1">
+                    ${{ "%.2f"|format(tier_info.monthly_price) }}
+                </div>
+                <div class="text-gray-600">per month</div>
+                {% if tier_info.yearly_price > 0 %}
+                <div class="text-sm text-gray-500 mt-2">
+                    ${{ "%.2f"|format(tier_info.yearly_price) }}/year (save {{ "%.0f"|format((1 - tier_info.yearly_price / (tier_info.monthly_price * 12)) * 100) }}%)
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-check text-green-500 mr-2"></i>
+                    {{ "{:,}".format(tier_info.limits.word_limit) }} words per month
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-check text-green-500 mr-2"></i>
+                    {{ "{:,}".format(tier_info.limits.api_requests_per_day) }} API requests/day
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-check text-green-500 mr-2"></i>
+                    Up to {{ tier_info.limits.max_users }} users
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-check text-green-500 mr-2"></i>
+                    {{ tier_info.support_level }} support
+                </div>
+            </div>
+            
+            <div class="space-y-2 mb-6">
+                {% for feature in tier_info.features[:3] %}
+                <div class="text-sm text-gray-600">
+                    <i class="fas fa-star text-yellow-400 mr-2"></i>{{ feature }}
+                </div>
+                {% endfor %}
+                {% if tier_info.features|length > 3 %}
+                <div class="text-sm text-gray-500">
+                    +{{ tier_info.features|length - 3 }} more features
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="text-center">
+                {% if tier_key == 'free' %}
+                    <a href="{{ url_for('register') }}" class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200">
+                        Get Started Free
+                    </a>
+                {% else %}
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('subscribe', tier=tier_key) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200">
+                            Choose {{ tier_info.name }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200">
+                            Sign Up for {{ tier_info.name }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            {% if tier_info.refund_policy != "N/A - Free tier" %}
+            <div class="text-center mt-3">
+                <div class="text-xs text-gray-500">{{ tier_info.refund_policy }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="mb-16">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Frequently Asked Questions</h2>
+    <div class="max-w-3xl mx-auto space-y-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">What's included in the free tier?</h3>
+            <p class="text-gray-600">The free tier includes basic software management features, up to 4,000 words per month, and community support. Perfect for getting started and small projects.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I upgrade or downgrade my plan?</h3>
+            <p class="text-gray-600">Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate your billing accordingly.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">What payment methods do you accept?</h3>
+            <p class="text-gray-600">We accept all major credit cards through Stripe and PayPal. All payments are processed securely and encrypted.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a trial period?</h3>
+            <p class="text-gray-600">Yes! All paid plans come with a 14-day free trial. You can cancel anytime during the trial period without being charged.</p>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="text-center bg-blue-600 rounded-lg p-12 text-white">
+    <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+    <p class="text-xl mb-8 opacity-90">Join thousands of developers who trust Maijd for their software management needs.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{{ url_for('register') }}" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg font-semibold transition duration-200">
+            <i class="fas fa-rocket mr-2"></i>Start Free Trial
+        </a>
+        <a href="#contact" class="border border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold transition duration-200">
+            <i class="fas fa-envelope mr-2"></i>Contact Sales
+        </a>
+    </div>
+</div>
+{% endblock %}

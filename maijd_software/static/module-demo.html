@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maijd Software Suite - Module Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .module-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        .demo-button {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        .demo-button:hover {
+            background: #2563eb;
+        }
+        .demo-button.secondary {
+            background: #10b981;
+        }
+        .demo-button.secondary:hover {
+            background: #059669;
+        }
+        .demo-button.warning {
+            background: #f59e0b;
+        }
+        .demo-button.warning:hover {
+            background: #d97706;
+        }
+        .demo-output {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .ai-chat {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9fafb;
+            margin: 10px 0;
+        }
+        .ai-message {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .ai-message.user {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+        .ai-message.assistant {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Maijd Software Suite</h1>
+            <p class="text-xl text-gray-600">Module Usage Examples & Demo</p>
+            <p class="text-sm text-gray-500 mt-2">Interactive demonstration of all available modules</p>
+        </header>
+
+        <!-- Utility Module Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-tools text-blue-500 mr-2"></i>
+                Utility Module (AIHubUtils)
+            </h2>
+            <p class="text-gray-600 mb-4">Basic utility functions for common operations</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoFormatCurrency()">
+                        <i class="fas fa-dollar-sign mr-2"></i>Format Currency
+                    </button>
+                    <button class="demo-button" onclick="demoFormatDate()">
+                        <i class="fas fa-calendar mr-2"></i>Format Date
+                    </button>
+                    <button class="demo-button" onclick="demoGenerateId()">
+                        <i class="fas fa-fingerprint mr-2"></i>Generate ID
+                    </button>
+                    <button class="demo-button" onclick="demoValidateEmail()">
+                        <i class="fas fa-envelope mr-2"></i>Validate Email
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="utils-output">
+                    Click buttons above to see utility functions in action...
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-database text-green-500 mr-2"></i>
+                Data Management Module (AIHubDataManager)
+            </h2>
+            <p class="text-gray-600 mb-4">Data fetching with caching and retry logic</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoFetchWithCache()">
+                        <i class="fas fa-download mr-2"></i>Fetch with Cache
+                    </button>
+                    <button class="demo-button" onclick="demoFetchWithRetry()">
+                        <i class="fas fa-redo mr-2"></i>Fetch with Retry
+                    </button>
+                    <button class="demo-button" onclick="demoClearCache()">
+                        <i class="fas fa-trash mr-2"></i>Clear Cache
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="data-output">
+                    Click buttons above to see data management functions...
+                </div>
+            </div>
+        </div>
+
+        <!-- UI Components Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-palette text-purple-500 mr-2"></i>
+                UI Components Module (AIHubUIComponents)
+            </h2>
+            <p class="text-gray-600 mb-4">Reusable UI components and modals</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoCreateModal()">
+                        <i class="fas fa-window-maximize mr-2"></i>Create Modal
+                    </button>
+                    <button class="demo-button" onclick="demoShowNotification()">
+                        <i class="fas fa-bell mr-2"></i>Show Notification
+                    </button>
+                    <button class="demo-button" onclick="demoShowLoading()">
+                        <i class="fas fa-spinner mr-2"></i>Show Loading
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="ui-output">
+                    Click buttons above to see UI components...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Manager Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-chart-bar text-yellow-500 mr-2"></i>
+                Chart Manager Module (AIHubChartManager)
+            </h2>
+            <p class="text-gray-600 mb-4">Create and manage various chart types</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoCreateProgressChart()">
+                        <i class="fas fa-chart-pie mr-2"></i>Progress Chart
+                    </button>
+                    <button class="demo-button" onclick="demoCreateDoughnutChart()">
+                        <i class="fas fa-chart-donut mr-2"></i>Doughnut Chart
+                    </button>
+                    <button class="demo-button" onclick="demoUpdateChart()">
+                        <i class="fas fa-sync mr-2"></i>Update Chart
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <canvas id="progress-chart" width="400" height="200"></canvas>
+                    <canvas id="doughnut-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="demo-output" id="chart-output">
+                    Click buttons above to create and manage charts...
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-robot text-indigo-500 mr-2"></i>
+                AI Assistant Module (AIHubAssistant)
+            </h2>
+            <p class="text-gray-600 mb-4">AI-powered assistance and conversation</p>
+            
+            <div class="space-y-4">
+                <div class="ai-chat">
+                    <div id="ai-messages">
+                        <div class="ai-message assistant">
+                            <strong>AI Assistant:</strong> Hello! I'm here to help you with project management and development questions. How can I assist you today?
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2 mt-3">
+                        <input type="text" id="ai-input" placeholder="Ask me anything..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button class="demo-button" onclick="demoSendAIMessage()">
+                            <i class="fas fa-paper-plane mr-2"></i>Send
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <button class="demo-button" onclick="demoGetProjectAdvice()">
+                        <i class="fas fa-lightbulb mr-2"></i>Get Project Advice
+                    </button>
+                    <button class="demo-button" onclick="demoGetTechAdvice()">
+                        <i class="fas fa-code mr-2"></i>Get Tech Advice
+                    </button>
+                    <button class="demo-button" onclick="demoClearAIConversation()">
+                        <i class="fas fa-eraser mr-2"></i>Clear Conversation
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="ai-output">
+                    AI Assistant responses will appear here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Manager Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-project-diagram text-red-500 mr-2"></i>
+                Project Manager Module (AIHubProjectManager)
+            </h2>
+            <p class="text-gray-600 mb-4">Project creation, management, and tracking</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoCreateProject()">
+                        <i class="fas fa-plus mr-2"></i>Create Project
+                    </button>
+                    <button class="demo-button" onclick="demoUpdateProgress()">
+                        <i class="fas fa-edit mr-2"></i>Update Progress
+                    </button>
+                    <button class="demo-button" onclick="demoGetProjectStats()">
+                        <i class="fas fa-chart-line mr-2"></i>Get Statistics
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="project-output">
+                    Project management operations will appear here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Features Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-star text-yellow-500 mr-2"></i>
+                Enhanced Features Suite (MaijdEnhancedFeatures)
+            </h2>
+            <p class="text-gray-600 mb-4">Advanced features including performance monitoring and real-time updates</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button" onclick="demoToggleTheme()">
+                        <i class="fas fa-moon mr-2"></i>Toggle Theme
+                    </button>
+                    <button class="demo-button" onclick="demoShowShortcuts()">
+                        <i class="fas fa-keyboard mr-2"></i>Show Shortcuts
+                    </button>
+                    <button class="demo-button" onclick="demoStartAutoSave()">
+                        <i class="fas fa-save mr-2"></i>Start Auto-Save
+                    </button>
+                    <button class="demo-button" onclick="demoGetPerformanceMetrics()">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Performance Metrics
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="enhanced-output">
+                    Enhanced features will be demonstrated here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Integrated Workflow Demo -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-cogs text-gray-500 mr-2"></i>
+                Integrated Workflow Demo
+            </h2>
+            <p class="text-gray-600 mb-4">See how all modules work together in a complete workflow</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <button class="demo-button secondary" onclick="demoInitializeWorkflow()">
+                        <i class="fas fa-play mr-2"></i>Initialize Complete Workflow
+                    </button>
+                    <button class="demo-button warning" onclick="demoStopWorkflow()">
+                        <i class="fas fa-stop mr-2"></i>Stop Workflow
+                    </button>
+                </div>
+                
+                <div class="demo-output" id="workflow-output">
+                    Workflow status and operations will appear here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="module-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-terminal text-green-500 mr-2"></i>
+                Console Output
+            </h2>
+            <p class="text-gray-600 mb-4">Check the browser console for detailed module operations</p>
+            
+            <div class="demo-output" id="console-output">
+                Console output will be captured here. Open browser console (F12) for more details.
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the module files -->
+    <script src="js/ai-hub-modules.js"></script>
+    <script src="js/enhanced-features.js"></script>
+    <script src="js/module-usage-examples.js"></script>
+    
+    <script>
+        // Demo functions for interactive examples
+        
+        function logToOutput(elementId, message) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+                element.scrollTop = element.scrollHeight;
+            }
+        }
+
+        function logToConsole(message) {
+            console.log(message);
+            logToOutput('console-output', message);
+        }
+
+        // Utility Module Demos
+        function demoFormatCurrency() {
+            const amount = 1250.75;
+            const formatted = AIHubUtils.formatCurrency(amount);
+            logToOutput('utils-output', `Formatted currency: ${formatted}`);
+            logToConsole(`Demo: Format currency ${amount} -> ${formatted}`);
+        }
+
+        function demoFormatDate() {
+            const date = '2024-01-15';
+            const formatted = AIHubUtils.formatDate(date);
+            logToOutput('utils-output', `Formatted date: ${formatted}`);
+            logToConsole(`Demo: Format date ${date} -> ${formatted}`);
+        }
+
+        function demoGenerateId() {
+            const id = AIHubUtils.generateId();
+            logToOutput('utils-output', `Generated ID: ${id}`);
+            logToConsole(`Demo: Generated ID ${id}`);
+        }
+
+        function demoValidateEmail() {
+            const email = 'user@example.com';
+            const isValid = AIHubUtils.validateEmail(email);
+            logToOutput('utils-output', `Email validation: ${email} is ${isValid ? 'valid' : 'invalid'}`);
+            logToConsole(`Demo: Email validation ${email} -> ${isValid}`);
+        }
+
+        // Data Management Demos
+        function demoFetchWithCache() {
+            logToOutput('data-output', 'Simulating fetch with cache...');
+            logToConsole('Demo: Fetch with cache');
+            
+            // Simulate API call
+            setTimeout(() => {
+                logToOutput('data-output', 'Data fetched and cached successfully');
+            }, 1000);
+        }
+
+        function demoFetchWithRetry() {
+            logToOutput('data-output', 'Simulating fetch with retry logic...');
+            logToConsole('Demo: Fetch with retry');
+            
+            // Simulate retry attempts
+            setTimeout(() => {
+                logToOutput('data-output', 'Data fetched after retry attempts');
+            }, 1500);
+        }
+
+        function demoClearCache() {
+            logToOutput('data-output', 'Cache cleared successfully');
+            logToConsole('Demo: Clear cache');
+        }
+
+        // UI Components Demos
+        function demoCreateModal() {
+            const modalContent = `
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-2">Demo Modal</h3>
+                    <p>This is a demo modal created using AIHubUIComponents.createModal()</p>
+                    <button class="demo-button mt-4" onclick="AIHubUIComponents.closeModal('demo-modal')">Close</button>
+                </div>
+            `;
+            
+            AIHubUIComponents.createModal('demo-modal', 'Demo Modal', modalContent, {
+                size: 'medium',
+                showCloseButton: true
+            });
+            
+            logToOutput('ui-output', 'Demo modal created and displayed');
+            logToConsole('Demo: Create modal');
+        }
+
+        function demoShowNotification() {
+            AIHubUIComponents.createNotification('This is a demo notification!', 'success', 5000);
+            logToOutput('ui-output', 'Demo notification created');
+            logToConsole('Demo: Show notification');
+        }
+
+        function demoShowLoading() {
+            const container = document.getElementById('ui-output');
+            const spinner = AIHubUIComponents.createLoadingSpinner(container, 'medium');
+            
+            setTimeout(() => {
+                AIHubUIComponents.removeLoadingSpinner(spinner);
+                logToOutput('ui-output', 'Loading completed');
+            }, 2000);
+            
+            logToOutput('ui-output', 'Loading spinner created');
+            logToConsole('Demo: Show loading spinner');
+        }
+
+        // Chart Manager Demos
+        function demoCreateProgressChart() {
+            const chartManager = new AIHubChartManager();
+            const data = {
+                labels: ['Planning', 'Development', 'Testing', 'Deployment'],
+                datasets: [{
+                    data: [25, 45, 20, 10],
+                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+                }]
+            };
+            
+            chartManager.createProgressChart('progress-chart', data, {
+                title: 'Project Progress',
+                showPercentage: true
+            });
+            
+            logToOutput('chart-output', 'Progress chart created successfully');
+            logToConsole('Demo: Create progress chart');
+        }
+
+        function demoCreateDoughnutChart() {
+            const chartManager = new AIHubChartManager();
+            const data = {
+                labels: ['Development', 'Design', 'Testing', 'Marketing'],
+                datasets: [{
+                    data: [40, 25, 20, 15],
+                    backgroundColor: ['#3B82F6', '#8B5CF6', '#F59E0B', '#10B981']
+                }]
+            };
+            
+            chartManager.createDoughnutChart('doughnut-chart', data, {
+                title: 'Budget Distribution',
+                showLegend: true
+            });
+            
+            logToOutput('chart-output', 'Doughnut chart created successfully');
+            logToConsole('Demo: Create doughnut chart');
+        }
+
+        function demoUpdateChart() {
+            const chartManager = new AIHubChartManager();
+            const newData = {
+                labels: ['Planning', 'Development', 'Testing', 'Deployment'],
+                datasets: [{
+                    data: [30, 50, 15, 5],
+                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+                }]
+            };
+            
+            chartManager.updateChart('progress-chart', newData);
+            logToOutput('chart-output', 'Chart updated with new data');
+            logToConsole('Demo: Update chart');
+        }
+
+        // AI Assistant Demos
+        function demoSendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'ai-message user';
+                userMessage.innerHTML = `<strong>You:</strong> ${message}`;
+                document.getElementById('ai-messages').appendChild(userMessage);
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'ai-message assistant';
+                    aiResponse.innerHTML = `<strong>AI Assistant:</strong> I understand you're asking about "${message}". This is a simulated response from the AI Assistant module.`;
+                    document.getElementById('ai-messages').appendChild(aiResponse);
+                    
+                    // Scroll to bottom
+                    const container = document.getElementById('ai-messages');
+                    container.scrollTop = container.scrollHeight;
+                }, 1000);
+                
+                input.value = '';
+                logToOutput('ai-output', `AI message sent: ${message}`);
+                logToConsole(`Demo: Send AI message: ${message}`);
+            }
+        }
+
+        function demoGetProjectAdvice() {
+            const advice = "For project management, I recommend starting with clear requirements, setting milestones, and using agile methodologies. Regular team communication is key to success.";
+            logToOutput('ai-output', `Project Advice: ${advice}`);
+            logToConsole('Demo: Get project advice');
+        }
+
+        function demoGetTechAdvice() {
+            const advice = "For technical decisions, consider scalability, maintainability, and team expertise. Choose technologies that align with your project goals and long-term vision.";
+            logToOutput('ai-output', `Tech Advice: ${advice}`);
+            logToConsole('Demo: Get tech advice');
+        }
+
+        function demoClearAIConversation() {
+            document.getElementById('ai-messages').innerHTML = `
+                <div class="ai-message assistant">
+                    <strong>AI Assistant:</strong> Hello! I'm here to help you with project management and development questions. How can I assist you today?
+                </div>
+            `;
+            logToOutput('ai-output', 'AI conversation cleared');
+            logToConsole('Demo: Clear AI conversation');
+        }
+
+        // Project Manager Demos
+        function demoCreateProject() {
+            const projectData = {
+                name: 'Demo E-commerce Platform',
+                description: 'A demonstration project for showcasing the Project Manager module',
+                category: 'Web Development',
+                budget: 50000,
+                status: 'planning'
+            };
+            
+            logToOutput('project-output', `Project created: ${projectData.name}`);
+            logToOutput('project-output', `Budget: ${AIHubUtils.formatCurrency(projectData.budget)}`);
+            logToOutput('project-output', `Status: ${projectData.status}`);
+            logToConsole('Demo: Create project');
+        }
+
+        function demoUpdateProgress() {
+            const progress = 75;
+            logToOutput('project-output', `Project progress updated to ${progress}%`);
+            logToConsole('Demo: Update project progress');
+        }
+
+        function demoGetProjectStats() {
+            const stats = {
+                total: 5,
+                active: 3,
+                completed: 1,
+                planning: 1
+            };
+            
+            logToOutput('project-output', `Project Statistics: Total: ${stats.total}, Active: ${stats.active}, Completed: ${stats.completed}, Planning: ${stats.planning}`);
+            logToConsole('Demo: Get project statistics');
+        }
+
+        // Enhanced Features Demos
+        function demoToggleTheme() {
+            logToOutput('enhanced-output', 'Theme toggled (light/dark)');
+            logToConsole('Demo: Toggle theme');
+        }
+
+        function demoShowShortcuts() {
+            logToOutput('enhanced-output', 'Keyboard shortcuts displayed');
+            logToConsole('Demo: Show shortcuts');
+        }
+
+        function demoStartAutoSave() {
+            logToOutput('enhanced-output', 'Auto-save started - data will be saved automatically');
+            logToConsole('Demo: Start auto-save');
+        }
+
+        function demoGetPerformanceMetrics() {
+            const metrics = {
+                memory: '45.2 MB',
+                cpu: '12%',
+                responseTime: '45ms',
+                uptime: '2h 15m'
+            };
+            
+            logToOutput('enhanced-output', `Performance Metrics: Memory: ${metrics.memory}, CPU: ${metrics.cpu}, Response: ${metrics.responseTime}, Uptime: ${metrics.uptime}`);
+            logToConsole('Demo: Get performance metrics');
+        }
+
+        // Integrated Workflow Demo
+        function demoInitializeWorkflow() {
+            logToOutput('workflow-output', 'Initializing complete workflow...');
+            logToOutput('workflow-output', 'Starting all services...');
+            logToOutput('workflow-output', 'Loading initial data...');
+            logToOutput('workflow-output', 'Setting up AI assistant...');
+            logToOutput('workflow-output', 'Creating initial charts...');
+            logToOutput('workflow-output', 'Workflow initialized successfully!');
+            logToConsole('Demo: Initialize complete workflow');
+        }
+
+        function demoStopWorkflow() {
+            logToOutput('workflow-output', 'Stopping workflow...');
+            logToOutput('workflow-output', 'All services stopped');
+            logToOutput('workflow-output', 'Workflow stopped successfully');
+            logToConsole('Demo: Stop workflow');
+        }
+
+        // Initialize demo when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('Demo page loaded successfully');
+            logToOutput('console-output', 'Demo page loaded - all modules are ready for demonstration');
+            
+            // Setup enter key for AI input
+            document.getElementById('ai-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    demoSendAIMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

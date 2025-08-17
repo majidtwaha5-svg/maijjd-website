@@ -1,0 +1,37 @@
+Maijjd Health Check Report
+Generated: Sat Aug  9 14:01:39 CDT 2025
+==================================
+
+System Information:
+OS: Darwin 24.5.0
+Hostname: Mac.attlocal.net
+User: juvenalnahimana
+
+Docker Status:
+Docker version 28.3.2, build 578ccf6
+Docker Compose version v2.39.1-desktop.1
+
+Node.js Status:
+v22.17.0
+10.9.2
+
+Service Status:
+NAME                               IMAGE                          COMMAND                  SERVICE      CREATED          STATUS                             PORTS
+maijjd_full_project-backend-1      maijjd_full_project-backend    "dumb-init -- npm st…"   backend      42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:5002->5000/tcp, [::]:5002->5000/tcp
+maijjd_full_project-frontend-1     maijjd_full_project-frontend   "dumb-init -- nginx …"   frontend     42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+maijjd_full_project-grafana-1      grafana/grafana:10.1.0         "/run.sh"                grafana      42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+maijjd_full_project-mongodb-1      mongo:7.0                      "docker-entrypoint.s…"   mongodb      42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+maijjd_full_project-nginx-1        nginx:1.25-alpine              "/docker-entrypoint.…"   nginx        42 seconds ago   Up 41 seconds (health: starting)   0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp
+maijjd_full_project-prometheus-1   prom/prometheus:v2.47.0        "/bin/prometheus --c…"   prometheus   42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+maijjd_full_project-redis-1        redis:7.2-alpine               "docker-entrypoint.s…"   redis        42 seconds ago   Up 41 seconds (healthy)            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+
+Port Status:
+Port 80: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)
+Port 443: In use by /Users/juvenalnahimana/Library/Developer/CoreSimulator/Devices/F4F78460-91E6-4863-9286-0058B26BED3B/data/Containers/Bundle/Application/2AA3899E-3F4D-448E-A709-E50EFB7D39E1/Exponent-2.33.13.tar.app/Expo Go (PID: 27100)
+Port 3000: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)
+Port 3001: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)
+Port 5000: In use by /System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter (PID: 52205)
+Port 5001: In use by node (PID: 94584)
+Port 27017: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)
+Port 6379: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)
+Port 9090: In use by /Applications/Docker.app/Contents/MacOS/com.docker.backend (PID: 99073)

@@ -1,0 +1,48 @@
+{
+  "name": "maijjd-full-project",
+  "version": "2.0.0",
+  "description": "Maijjd Full Project - Complete Software Suite with AI Integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend_maijjd && npm start",
+    "start:frontend": "cd frontend_maijjd && npm start",
+    "start:frontend:3000": "cd frontend_maijjd && npm run start:3000",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend_maijjd && npm run dev",
+    "dev:frontend": "cd frontend_maijjd && npm start",
+    "install:all": "npm install && cd backend_maijjd && npm install && cd ../frontend_maijjd && npm install",
+    "build": "cd frontend_maijjd && npm run build",
+    "test": "cd backend_maijjd && npm test",
+    "test:frontend": "cd frontend_maijjd && npm test",
+    "lint": "cd backend_maijjd && npm run lint",
+    "lint:frontend": "cd frontend_maijjd && npm run lint"
+  },
+  "keywords": [
+    "maijjd",
+    "ai",
+    "software",
+    "productivity",
+    "full-stack",
+    "react",
+    "nodejs",
+    "express"
+  ],
+  "author": "Maijjd Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maijjd/full-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maijjd/full-project/issues"
+  },
+  "homepage": "https://maijjd.com"
+}

@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd maijd_software && python mobile_api.py"
+healthcheckPath = "/api/v1/health"
+healthcheckTimeout = 300
+
+[[services]]
+name = "maijd-mobile-api"

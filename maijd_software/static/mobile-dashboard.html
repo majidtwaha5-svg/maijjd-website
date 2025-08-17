@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Maijd Mobile Dashboard</title>
+    <meta name="description" content="Advanced mobile software management with offline support and real-time updates">
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Maijd Mobile">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/static/icons/icon-512x512.png">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .mobile-card {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .swipe-area {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .swipe-item {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .nav-item.active {
+            color: #3b82f6;
+        }
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-item span {
+            font-size: 12px;
+        }
+        .floating-fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 999;
+        }
+        .pull-to-refresh {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            z-index: 1001;
+            display: none;
+        }
+        .gesture-hint {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 1002;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 pb-20">
+    <!-- Offline Indicator -->
+    <div id="offline-indicator" class="offline-indicator">
+        <i class="fas fa-wifi-slash mr-2"></i>
+        You're offline. Some features may be limited.
+    </div>
+
+    <!-- Gesture Hint -->
+    <div id="gesture-hint" class="gesture-hint">
+        <i class="fas fa-hand-pointer text-2xl mb-3"></i>
+        <div>Tap any card to launch features instantly!</div>
+        <button onclick="hideGestureHint()" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg">
+            Got it!
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 sticky top-0 z-50">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold">Maijd Suite</h1>
+                <p class="text-sm opacity-90">Mobile Dashboard</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleSearch()" class="p-2 rounded-lg bg-white bg-opacity-20">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button onclick="toggleNotifications()" class="p-2 rounded-lg bg-white bg-opacity-20 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div id="search-bar" class="mt-3 hidden">
+            <input type="text" placeholder="Search features..." 
+                   class="w-full px-3 py-2 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white">
+        </div>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="p-4">
+        <div class="grid grid-cols-4 gap-3">
+            <div class="bg-white rounded-lg p-3 text-center">
+                <i class="fas fa-wifi text-green-500 text-lg mb-1"></i>
+                <div class="text-xs text-gray-600">Online</div>
+            </div>
+            <div class="bg-white rounded-lg p-3 text-center">
+                <i class="fas fa-sync text-blue-500 text-lg mb-1"></i>
+                <div class="text-xs text-gray-600">Synced</div>
+            </div>
+            <div class="bg-white rounded-lg p-3 text-center">
+                <i class="fas fa-shield-alt text-purple-500 text-lg mb-1"></i>
+                <div class="text-xs text-gray-600">Secure</div>
+            </div>
+            <div class="bg-white rounded-lg p-3 text-center">
+                <i class="fas fa-bolt text-yellow-500 text-lg mb-1"></i>
+                <div class="text-xs text-gray-600">Fast</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Features -->
+    <div class="px-4 space-y-4">
+        <!-- AI Assistant -->
+        <div class="mobile-card bg-white rounded-xl p-4 shadow-sm" onclick="launchFeature('ai-assistant')">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-100 p-3 rounded-lg">
+                    <i class="fas fa-robot text-indigo-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">AI Assistant</h3>
+                    <p class="text-sm text-gray-600">Get instant help anywhere</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Project Management -->
+        <div class="mobile-card bg-white rounded-xl p-4 shadow-sm" onclick="launchFeature('project-management')">
+            <div class="flex items-center space-x-3">
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i class="fas fa-project-diagram text-green-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">Projects</h3>
+                    <p class="text-sm text-gray-600">Manage work remotely</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="mobile-card bg-white rounded-xl p-4 shadow-sm" onclick="launchFeature('analytics')">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <i class="fas fa-chart-bar text-blue-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">Analytics</h3>
+                    <p class="text-sm text-gray-600">Real-time insights</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Performance -->
+        <div class="mobile-card bg-white rounded-xl p-4 shadow-sm" onclick="launchFeature('performance')">
+            <div class="flex items-center space-x-3">
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i class="fas fa-tachometer-alt text-purple-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-gray-800">Performance</h3>
+                    <p class="text-sm text-gray-600">Monitor system health</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-2 gap-3 mt-6">
+            <button onclick="quickAction('auto-save')" class="bg-gradient-to-r from-green-400 to-green-600 text-white p-4 rounded-xl shadow-sm">
+                <i class="fas fa-save text-xl mb-2"></i>
+                <div class="font-semibold text-sm">Auto-Save</div>
+            </button>
+            
+            <button onclick="quickAction('shortcuts')" class="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-4 rounded-xl shadow-sm">
+                <i class="fas fa-keyboard text-xl mb-2"></i>
+                <div class="font-semibold text-sm">Shortcuts</div>
+            </button>
+            
+            <button onclick="quickAction('theme')" class="bg-gradient-to-r from-purple-400 to-purple-600 text-white p-4 rounded-xl shadow-sm">
+                <i class="fas fa-palette text-xl mb-2"></i>
+                <div class="font-semibold text-sm">Theme</div>
+            </button>
+            
+            <button onclick="quickAction('sync')" class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white p-4 rounded-xl shadow-sm">
+                <i class="fas fa-sync text-xl mb-2"></i>
+                <div class="font-semibold text-sm">Sync</div>
+            </button>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl p-4 shadow-sm mt-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Recent Activity</h3>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-sm text-gray-600">AI Assistant ready</span>
+                    <span class="text-xs text-gray-400 ml-auto">2m ago</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-sm text-gray-600">Project sync complete</span>
+                    <span class="text-xs text-gray-400 ml-auto">5m ago</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span class="text-sm text-gray-600">Performance check</span>
+                    <span class="text-xs text-gray-400 ml-auto">10m ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-fab">
+        <button onclick="showQuickMenu()" class="bg-indigo-500 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Quick Menu Modal -->
+    <div id="quick-menu" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-end justify-center min-h-screen p-4">
+            <div class="bg-white rounded-t-xl p-6 w-full max-w-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Quick Actions</h3>
+                    <button onclick="hideQuickMenu()" class="text-gray-400">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <button onclick="quickLaunch('ai-chat')" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg flex items-center">
+                        <i class="fas fa-robot text-indigo-500 mr-3"></i>
+                        <span>AI Chat</span>
+                    </button>
+                    <button onclick="quickLaunch('new-project')" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg flex items-center">
+                        <i class="fas fa-plus text-green-500 mr-3"></i>
+                        <span>New Project</span>
+                    </button>
+                    <button onclick="quickLaunch('performance')" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg flex items-center">
+                        <i class="fas fa-tachometer-alt text-purple-500 mr-3"></i>
+                        <span>Performance Check</span>
+                    </button>
+                    <button onclick="quickLaunch('settings')" class="w-full text-left p-3 hover:bg-gray-50 rounded-lg flex items-center">
+                        <i class="fas fa-cog text-gray-500 mr-3"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="flex">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('features')">
+                <i class="fas fa-th-large"></i>
+                <span>Features</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('ai')">
+                <i class="fas fa-robot"></i>
+                <span>AI</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('profile')">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Load modules -->
+    <script src="js/ai-hub-modules.js"></script>
+    <script src="js/enhanced-features.js"></script>
+    
+    <script>
+        let currentTab = 'dashboard';
+        let enhancedFeatures;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Mobile Dashboard initializing...');
+            
+            // Initialize modules
+            enhancedFeatures = new MaijdEnhancedFeatures();
+            
+            // Start essential services
+            enhancedFeatures.performanceMonitor.start();
+            enhancedFeatures.realTimeUpdates.start();
+            enhancedFeatures.autoSave.start();
+            
+            // Show gesture hint on first visit
+            if (!localStorage.getItem('gesture-hint-shown')) {
+                setTimeout(() => {
+                    showGestureHint();
+                }, 1000);
+            }
+            
+            // Check online status
+            checkOnlineStatus();
+            
+            console.log('Mobile Dashboard ready!');
+        });
+
+        // Feature Launch Functions
+        function launchFeature(feature) {
+            console.log(`Launching: ${feature}`);
+            
+            switch(feature) {
+                case 'ai-assistant':
+                    showToast('AI Assistant launching...', 'success');
+                    // Simulate AI launch
+                    setTimeout(() => {
+                        showToast('AI Assistant ready! Ask me anything.', 'success');
+                    }, 1000);
+                    break;
+                    
+                case 'project-management':
+                    showToast('Project Manager launching...', 'success');
+                    break;
+                    
+                case 'analytics':
+                    showToast('Analytics dashboard loading...', 'success');
+                    break;
+                    
+                case 'performance':
+                    showToast('Performance monitor starting...', 'success');
+                    break;
+                    
+                default:
+                    showToast('Feature launching...', 'info');
+            }
+        }
+
+        // Quick Actions
+        function quickAction(action) {
+            console.log(`Quick action: ${action}`);
+            
+            switch(action) {
+                case 'auto-save':
+                    enhancedFeatures.autoSave.start();
+                    showToast('Auto-save enabled!', 'success');
+                    break;
+                    
+                case 'shortcuts':
+                    showToast('Shortcuts: Swipe left/right for navigation', 'info');
+                    break;
+                    
+                case 'theme':
+                    enhancedFeatures.themeManager.toggle();
+                    showToast('Theme switched!', 'success');
+                    break;
+                    
+                case 'sync':
+                    enhancedFeatures.realTimeUpdates.start();
+                    showToast('Syncing...', 'info');
+                    setTimeout(() => {
+                        showToast('Sync complete!', 'success');
+                    }, 2000);
+                    break;
+            }
+        }
+
+        // Quick Launch Functions
+        function quickLaunch(action) {
+            console.log(`Quick launch: ${action}`);
+            
+            switch(action) {
+                case 'ai-chat':
+                    launchFeature('ai-assistant');
+                    break;
+                    
+                case 'new-project':
+                    launchFeature('project-management');
+                    break;
+                    
+                case 'performance':
+                    launchFeature('performance');
+                    break;
+                    
+                case 'settings':
+                    showToast('Settings panel opening...', 'info');
+                    break;
+            }
+            
+            hideQuickMenu();
+        }
+
+        // Tab Functions
+        function switchTab(tab) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.closest('.nav-item').classList.add('active');
+            
+            currentTab = tab;
+            console.log(`Switched to tab: ${tab}`);
+            
+            // Handle tab-specific content
+            switch(tab) {
+                case 'dashboard':
+                    showToast('Dashboard view', 'info');
+                    break;
+                case 'features':
+                    showToast('Features view', 'info');
+                    break;
+                case 'ai':
+                    launchFeature('ai-assistant');
+                    break;
+                case 'profile':
+                    showToast('Profile view', 'info');
+                    break;
+            }
+        }
+
+        // UI Functions
+        function toggleSearch() {
+            const searchBar = document.getElementById('search-bar');
+            searchBar.classList.toggle('hidden');
+        }
+
+        function toggleNotifications() {
+            enhancedFeatures.notificationCenter.show('Notifications toggled!', 'info');
+        }
+
+        function showQuickMenu() {
+            document.getElementById('quick-menu').classList.remove('hidden');
+        }
+
+        function hideQuickMenu() {
+            document.getElementById('quick-menu').classList.add('hidden');
+        }
+
+        function showGestureHint() {
+            document.getElementById('gesture-hint').style.display = 'block';
+        }
+
+        function hideGestureHint() {
+            document.getElementById('gesture-hint').style.display = 'none';
+            localStorage.setItem('gesture-hint-shown', 'true');
+        }
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            // Simple mobile toast
+            const toast = document.createElement('div');
+            toast.className = `fixed top-20 left-4 right-4 bg-${type === 'success' ? 'green' : 'blue'}-500 text-white p-3 rounded-lg text-center z-50`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function checkOnlineStatus() {
+            if (!navigator.onLine) {
+                document.getElementById('offline-indicator').style.display = 'block';
+            }
+            
+            window.addEventListener('online', () => {
+                document.getElementById('offline-indicator').style.display = 'none';
+                showToast('Back online!', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                document.getElementById('offline-indicator').style.display = 'block';
+                showToast('You\'re offline', 'error');
+            });
+        }
+
+        // Touch Gestures
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            // Swipe left/right for navigation
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    // Swipe left - next tab
+                    const tabs = ['dashboard', 'features', 'ai', 'profile'];
+                    const currentIndex = tabs.indexOf(currentTab);
+                    const nextTab = tabs[(currentIndex + 1) % tabs.length];
+                    switchTab(nextTab);
+                } else {
+                    // Swipe right - previous tab
+                    const tabs = ['dashboard', 'features', 'ai', 'profile'];
+                    const currentIndex = tabs.indexOf(currentTab);
+                    const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length];
+                    switchTab(prevTab);
+                }
+            }
+        });
+
+        // Pull to refresh simulation
+        let pullStartY = 0;
+        let pullDistance = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+            }
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (window.scrollY === 0 && pullStartY > 0) {
+                pullDistance = e.touches[0].clientY - pullStartY;
+                if (pullDistance > 0) {
+                    document.body.style.transform = `translateY(${Math.min(pullDistance * 0.3, 100)}px)`;
+                }
+            }
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (pullDistance > 100) {
+                // Trigger refresh
+                showToast('Refreshing...', 'info');
+                setTimeout(() => {
+                    showToast('Dashboard refreshed!', 'success');
+                }, 1000);
+            }
+            
+            // Reset
+            document.body.style.transform = '';
+            pullStartY = 0;
+            pullDistance = 0;
+        });
+
+        // Auto-hide quick menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#quick-menu') && !e.target.closest('.floating-fab')) {
+                hideQuickMenu();
+            }
+        });
+
+        // Enhanced Mobile Features Integration
+        let mobileEnhanced = null;
+
+        // Initialize enhanced mobile features
+        async function initializeEnhancedFeatures() {
+            try {
+                // Load the enhanced mobile module
+                const script = document.createElement('script');
+                script.src = '/static/js/mobile-enhanced.js';
+                script.onload = () => {
+                    if (window.mobileEnhanced) {
+                        mobileEnhanced = window.mobileEnhanced;
+                        mobileEnhanced.initialize();
+                        console.log('Enhanced mobile features initialized');
+                        
+                        // Update UI with enhanced features
+                        updateUIWithEnhancedFeatures();
+                    }
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error('Error initializing enhanced features:', error);
+            }
+        }
+
+        // Update UI with enhanced features
+        function updateUIWithEnhancedFeatures() {
+            if (mobileEnhanced) {
+                // Add enhanced features to existing UI
+                addEnhancedFeatures();
+                
+                // Listen for real-time updates
+                mobileEnhanced.on('realTimeUpdate', (data) => {
+                    updateDashboardWithRealTimeData(data);
+                });
+                
+                // Listen for offline status changes
+                mobileEnhanced.on('offlineStatusChange', (isOffline) => {
+                    updateOfflineStatus(isOffline);
+                });
+            }
+        }
+
+        // Add enhanced features to UI
+        function addEnhancedFeatures() {
+            // Add background sync indicator
+            const syncIndicator = document.createElement('div');
+            syncIndicator.id = 'sync-indicator';
+            syncIndicator.className = 'fixed top-0 right-0 m-4 z-50';
+            syncIndicator.innerHTML = `
+                <div class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs flex items-center">
+                    <i class="fas fa-sync-alt mr-1"></i>
+                    <span id="sync-status">Synced</span>
+                </div>
+            `;
+            document.body.appendChild(syncIndicator);
+            
+            // Add enhanced notification area
+            const enhancedNotifications = document.createElement('div');
+            enhancedNotifications.id = 'enhanced-notifications';
+            enhancedNotifications.className = 'fixed top-16 right-4 z-40 max-w-sm';
+            document.body.appendChild(enhancedNotifications);
+        }
+
+        // Update dashboard with real-time data
+        function updateDashboardWithRealTimeData(data) {
+            if (data.type === 'software_update') {
+                showToast(`Software updated: ${data.software_name}`, 'success');
+                refreshSoftwareList();
+            } else if (data.type === 'system_alert') {
+                showToast(`System alert: ${data.message}`, 'warning');
+                updateSystemStatus(data);
+            } else if (data.type === 'notification') {
+                showEnhancedNotification(data);
+            }
+        }
+
+        // Update offline status
+        function updateOfflineStatus(isOffline) {
+            const offlineIndicator = document.getElementById('offline-indicator');
+            const syncStatus = document.getElementById('sync-status');
+            
+            if (isOffline) {
+                offlineIndicator.style.display = 'block';
+                if (syncStatus) syncStatus.textContent = 'Offline';
+            } else {
+                offlineIndicator.style.display = 'none';
+                if (syncStatus) syncStatus.textContent = 'Synced';
+            }
+        }
+
+        // Show enhanced notification
+        function showEnhancedNotification(data) {
+            const notificationArea = document.getElementById('enhanced-notifications');
+            if (!notificationArea) return;
+            
+            const notification = document.createElement('div');
+            notification.className = 'bg-white border-l-4 border-blue-500 shadow-lg rounded-lg p-4 mb-2 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-bell text-blue-500"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium text-gray-900">${data.title}</p>
+                        <p class="text-sm text-gray-500">${data.message}</p>
+                        <div class="mt-2 flex space-x-2">
+                            <button onclick="handleNotificationAction('${data.id}', 'view')" class="text-xs bg-blue-500 text-white px-2 py-1 rounded">View</button>
+                            <button onclick="handleNotificationAction('${data.id}', 'dismiss')" class="text-xs bg-gray-300 text-gray-700 px-2 py-1 rounded">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            notificationArea.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 10000);
+        }
+
+        // Handle notification actions
+        function handleNotificationAction(notificationId, action) {
+            if (mobileEnhanced) {
+                mobileEnhanced.handleNotificationAction(notificationId, action);
+            }
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('Service Worker registered successfully:', registration);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                    
+                    // Handle service worker messages
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'CACHE_UPDATED') {
+                            showToast('App updated! Refresh to see changes.', 'info');
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Show update notification
+        function showUpdateNotification() {
+            const updateNotification = document.createElement('div');
+            updateNotification.className = 'fixed bottom-20 left-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg z-50';
+            updateNotification.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">App Update Available</p>
+                        <p class="text-sm opacity-90">Tap to refresh and get the latest version</p>
+                    </div>
+                    <button onclick="window.location.reload()" class="bg-white text-blue-500 px-4 py-2 rounded-lg font-medium">
+                        Update
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(updateNotification);
+            
+            // Auto-hide after 30 seconds
+            setTimeout(() => {
+                if (updateNotification.parentNode) {
+                    updateNotification.parentNode.removeChild(updateNotification);
+                }
+            }, 30000);
+        }
+
+        // Initialize enhanced features when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEnhancedFeatures();
+        });
+
+        console.log('Mobile Dashboard loaded successfully!');
+        console.log('Swipe left/right to navigate between tabs');
+        console.log('Pull down to refresh');
+        console.log('Enhanced mobile features will be loaded automatically');
+    </script>
+</body>
+</html>

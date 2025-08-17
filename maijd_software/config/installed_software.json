@@ -1,0 +1,87 @@
+{
+  "installed_software": {
+    "ai_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/ai_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "application_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/application_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "cloud_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/cloud_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "crm_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/crm_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "crs_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/crs_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "development_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/development_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "embedded_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/embedded_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "programming_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/programming_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "real_time_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/real_time_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "scientific_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/scientific_software",
+      "status": "active",
+      "features_enabled": true
+    },
+    "system_software": {
+      "version": "2024.1.0",
+      "installed_at": "2024-08-09T14:00:00Z",
+      "path": "/maijd_software/system_software",
+      "status": "active",
+      "features_enabled": true
+    }
+  },
+  "installation_info": {
+    "install_date": "2024-08-09T14:00:00Z",
+    "total_software_count": 11,
+    "active_software_count": 11,
+    "last_updated": "2024-08-09T14:00:00Z"
+  }
+}

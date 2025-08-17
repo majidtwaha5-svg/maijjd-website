@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  maijd-web:
+    build: .
+    container_name: maijd-web
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=web_dashboard.py
+      - SECRET_KEY=${SECRET_KEY:-maijd-software-suite-2024}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///maijd.db}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: maijd-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: maijd-postgres
+    environment:
+      - POSTGRES_DB=maijd
+      - POSTGRES_USER=maijd
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-maijd_password_2024}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: maijd-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - maijd-web
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: maijd-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: maijd-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - maijd-network
+
+volumes:
+  redis_data:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  maijd-network:
+    driver: bridge

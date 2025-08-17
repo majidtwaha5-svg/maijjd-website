@@ -1,0 +1,214 @@
+{
+  "name": "Maijd Software Suite Mobile",
+  "short_name": "Maijd Mobile",
+  "description": "Advanced mobile software management with offline support and real-time updates",
+  "version": "2.0.0",
+  "start_url": "/mobile-dashboard.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#3B82F6",
+  "background_color": "#FFFFFF",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "utilities", "business"],
+  "icons": [
+    {
+      "src": "/static/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View system overview and quick stats",
+      "url": "/mobile-dashboard.html?tab=dashboard",
+      "icons": [
+        {
+          "src": "/static/icons/dashboard-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Software Management",
+      "short_name": "Software",
+      "description": "Manage installed software and installations",
+      "url": "/mobile-dashboard.html?tab=features",
+      "icons": [
+        {
+          "src": "/static/icons/software-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Access AI-powered features and insights",
+      "url": "/mobile-dashboard.html?tab=ai",
+      "icons": [
+        {
+          "src": "/static/icons/ai-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "System Monitor",
+      "short_name": "Monitor",
+      "description": "Monitor system performance and health",
+      "url": "/mobile-dashboard.html?tab=profile",
+      "icons": [
+        {
+          "src": "/static/icons/monitor-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/screenshots/mobile-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Dashboard Overview"
+    },
+    {
+      "src": "/static/screenshots/mobile-software.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Software Management"
+    },
+    {
+      "src": "/static/screenshots/mobile-ai.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AI Assistant Interface"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "Offline Support",
+    "Real-time Updates",
+    "Push Notifications",
+    "Background Sync",
+    "Touch Optimized",
+    "Gesture Support",
+    "Dark Mode",
+    "Responsive Design"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "protocol_handlers": [
+    {
+      "protocol": "web+maijd",
+      "url": "/mobile-dashboard.html?action=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/mobile-dashboard.html?action=open&file=%s",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt", ".log"],
+        "application/xml": [".xml"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/mobile-dashboard.html?action=share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["*/*"]
+        }
+      ]
+    }
+  },
+  "permissions": [
+    "notifications",
+    "background-sync",
+    "storage",
+    "geolocation"
+  ],
+  "background": {
+    "service_worker": "/sw.js",
+    "type": "module"
+  },
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "window-controls-overlay"
+  ],
+  "window_controls_overlay": {
+    "tag": "title-bar",
+    "visibility": "auto"
+  },
+  "capture_links": "existing-client-navigate",
+  "iarc_rating_id": "e84b072d-71e3-4d3e-8ae9-bd6c5f11d9ea",
+  "id": "maijd-software-suite-mobile",
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
