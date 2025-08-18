@@ -39,5 +39,5 @@
     "MAX_FILE_SIZE": "10485760",
     "UPLOAD_PATH": "uploads/"
   },
-  "comment": "Railway deployment configuration for Maijjd backend"
+  "comment": "Railway deployment configuration for Maijjd backend - clean deployment"
 }
