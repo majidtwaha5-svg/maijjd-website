@@ -1,42 +1,48 @@
 {
-  "name": "maijjd-backend",
+  "name": "maijjd-full-project",
   "version": "2.0.0",
-  "description": "Maijjd Backend API - Railway Deployment",
-  "main": "server.js",
+  "description": "Maijjd Full Project - Complete Software Suite with AI Integration",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo 'Build completed'",
-    "dev": "nodemon server.js"
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend_maijjd && npm start",
+    "start:frontend": "cd frontend_maijjd && npm start",
+    "start:frontend:3000": "cd frontend_maijjd && npm run start:3000",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend_maijjd && npm run dev",
+    "dev:frontend": "cd frontend_maijjd && npm start",
+    "install:all": "npm install && cd backend_maijjd && npm install && cd ../frontend_maijjd && npm install",
+    "build": "cd frontend_maijjd && npm run build",
+    "test": "cd backend_maijjd && npm test",
+    "test:frontend": "cd frontend_maijjd && npm test",
+    "lint": "cd backend_maijjd && npm run lint",
+    "lint:frontend": "cd frontend_maijjd && npm run lint"
   },
   "keywords": [
-    "api",
-    "backend",
-    "express",
-    "nodejs"
+    "maijjd",
+    "ai",
+    "software",
+    "productivity",
+    "full-stack",
+    "react",
+    "nodejs",
+    "express"
   ],
   "author": "Maijjd Development Team",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "dotenv": "^16.3.1",
-    "express-rate-limit": "^7.1.5",
-    "compression": "^1.7.4",
-    "swagger-ui-express": "^5.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3",
-    "joi": "^17.11.0",
-    "express-validator": "^7.0.1",
-    "twilio": "^4.19.0",
-    "nodemailer": "^6.9.7",
-    "mongoose": "^8.0.3",
-    "winston": "^3.11.0",
-    "morgan": "^1.10.0",
-    "uuid": "^9.0.1"
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  }
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maijjd/full-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maijjd/full-project/issues"
+  },
+  "homepage": "https://maijjd.com"
 }

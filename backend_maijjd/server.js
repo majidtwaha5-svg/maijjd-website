@@ -26,7 +26,10 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // Basic middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
 app.use(cors());
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
@@ -46,7 +49,8 @@ app.get('/', (req, res) => {
     message: 'Maijjd Backend is running',
     timestamp: new Date().toISOString(),
     version: '2.0.0',
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT
   });
 });
 
@@ -99,14 +103,38 @@ app.use('*', (req, res) => {
   });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: process.env.NODE_ENV === 'production' ? 'Something went wrong' : err.message
+  });
+});
+
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Maijjd Backend running on port ${PORT}`);
   console.log(`🔍 Root Health Check: http://localhost:${PORT}/`);
   console.log(`🔍 Health Check: http://localhost:${PORT}/health`);
   console.log(`🌐 API: http://localhost:${PORT}/api`);
   console.log(`📚 Documentation: http://localhost:${PORT}/api-docs`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
 });
 
 module.exports = app;
