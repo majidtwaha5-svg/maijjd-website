@@ -38,5 +38,6 @@
     "INPUT_SANITIZATION": "true",
     "MAX_FILE_SIZE": "10485760",
     "UPLOAD_PATH": "uploads/"
-  }
+  },
+  "comment": "Railway deployment configuration for Maijjd backend"
 }
