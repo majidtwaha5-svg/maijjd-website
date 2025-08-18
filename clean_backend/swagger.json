@@ -1,0 +1,159 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Maijjd Intelligent API",
+    "description": "Advanced Software Integration Platform with AI capabilities",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Maijjd Development Team",
+      "email": "support@maijjd.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.maijjd.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:5001",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Returns the health status of the API",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Maijjd Intelligent API is running"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "2.0.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/software": {
+      "get": {
+        "summary": "Get software catalog",
+        "description": "Retrieve the list of available software",
+        "responses": {
+          "200": {
+            "description": "Software list retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/services": {
+      "get": {
+        "summary": "Get services",
+        "description": "Retrieve the list of available services",
+        "responses": {
+          "200": {
+            "description": "Services list retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/auth": {
+      "post": {
+        "summary": "User authentication",
+        "description": "Authenticate user and return JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful"
+          }
+        }
+      }
+    },
+    "/api/ai/integration": {
+      "get": {
+        "summary": "AI Integration endpoint",
+        "description": "Returns AI integration capabilities",
+        "responses": {
+          "200": {
+            "description": "AI integration information"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health check endpoints"
+    },
+    {
+      "name": "Software",
+      "description": "Software catalog management"
+    },
+    {
+      "name": "Services",
+      "description": "Services management"
+    },
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization"
+    },
+    {
+      "name": "AI",
+      "description": "AI integration and capabilities"
+    }
+  ]
+}
