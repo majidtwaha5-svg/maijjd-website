@@ -4,43 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const compression = require('compression');
-const path = require('path');
-const swaggerUi = require('swagger-ui-express');
-
-// Load swagger document with multiple fallback paths
-let swaggerDocument;
-try {
-  // Try multiple possible paths for swagger.json
-  const possiblePaths = [
-    './swagger.json',
-    path.join(__dirname, 'swagger.json'),
-    path.join(process.cwd(), 'swagger.json'),
-    path.join(process.cwd(), 'backend_maijjd', 'swagger.json')
-  ];
-  
-  for (const swaggerPath of possiblePaths) {
-    try {
-      swaggerDocument = require(swaggerPath);
-      console.log(`✅ Swagger loaded from: ${swaggerPath}`);
-      break;
-    } catch (e) {
-      // Continue to next path
-    }
-  }
-  
-  if (!swaggerDocument) {
-    throw new Error('Swagger file not found in any expected location');
-  }
-} catch (error) {
-  console.warn('⚠️  Swagger file not found; using minimal OpenAPI stub');
-  swaggerDocument = {
-    openapi: '3.0.0',
-    info: { title: 'Maijjd API', version: '2.0.0' },
-    paths: {}
-  };
-}
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -54,13 +18,6 @@ app.use(cors());
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use('/api', limiter);
 
 // Root endpoint for Railway health check
 app.get('/', (req, res) => {
@@ -104,22 +61,35 @@ app.get('/api', (req, res) => {
       '/',
       '/health',
       '/api/health',
-      '/api-docs'
+      '/api'
     ]
   });
 });
 
-// API Documentation (Swagger/OpenAPI)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Maijjd API Documentation'
-}));
+// API info endpoint
+app.get('/api/info', (req, res) => {
+  res.json({
+    name: 'Maijjd Backend API',
+    version: '2.0.0',
+    description: 'Backend API for Maijjd Platform',
+    status: 'operational',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Not Found',
-    message: `Route ${req.originalUrl} not found`
+    message: `Route ${req.originalUrl} not found`,
+    availableEndpoints: [
+      '/',
+      '/health',
+      '/api/health',
+      '/api',
+      '/api/info'
+    ]
   });
 });
 
@@ -138,7 +108,6 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔍 Root Health Check: http://localhost:${PORT}/`);
   console.log(`🔍 Health Check: http://localhost:${PORT}/health`);
   console.log(`🌐 API: http://localhost:${PORT}/api`);
-  console.log(`📚 Documentation: http://localhost:${PORT}/api-docs`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
