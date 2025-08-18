@@ -1,10 +1,27 @@
 {
-  "rewrites": [
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
+  "routes": [
     {
       "source": "/api/(.*)",
-      "destination": "https://api.maijjd.com/api/$1"
+      "destination": "https://your-railway-backend-url.railway.app/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "REACT_APP_API_URL": "https://your-railway-backend-url.railway.app/api"
+  },
+  "build": {
+    "env": {
+      "CI": "false"
+    }
+  }
 }
 
 
