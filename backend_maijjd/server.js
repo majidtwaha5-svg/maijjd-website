@@ -9,10 +9,30 @@ const compression = require('compression');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 
-// Load swagger document
+// Load swagger document with multiple fallback paths
 let swaggerDocument;
 try {
-  swaggerDocument = require('./swagger.json');
+  // Try multiple possible paths for swagger.json
+  const possiblePaths = [
+    './swagger.json',
+    path.join(__dirname, 'swagger.json'),
+    path.join(process.cwd(), 'swagger.json'),
+    path.join(process.cwd(), 'backend_maijjd', 'swagger.json')
+  ];
+  
+  for (const swaggerPath of possiblePaths) {
+    try {
+      swaggerDocument = require(swaggerPath);
+      console.log(`✅ Swagger loaded from: ${swaggerPath}`);
+      break;
+    } catch (e) {
+      // Continue to next path
+    }
+  }
+  
+  if (!swaggerDocument) {
+    throw new Error('Swagger file not found in any expected location');
+  }
 } catch (error) {
   console.warn('⚠️  Swagger file not found; using minimal OpenAPI stub');
   swaggerDocument = {
