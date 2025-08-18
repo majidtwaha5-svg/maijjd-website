@@ -39,17 +39,6 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Root endpoint for Railway health check
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
-    message: 'Maijjd Backend is running',
-    timestamp: new Date().toISOString(),
-    version: '2.0.0',
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
 // Simple health check for Railway
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -77,7 +66,6 @@ app.get('/api', (req, res) => {
     version: '2.0.0',
     status: 'running',
     endpoints: [
-      '/',
       '/health',
       '/api/health',
       '/api-docs'
@@ -102,11 +90,9 @@ app.use('*', (req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Maijjd Backend running on port ${PORT}`);
-  console.log(`🔍 Root Health Check: http://localhost:${PORT}/`);
   console.log(`🔍 Health Check: http://localhost:${PORT}/health`);
   console.log(`🌐 API: http://localhost:${PORT}/api`);
   console.log(`📚 Documentation: http://localhost:${PORT}/api-docs`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
