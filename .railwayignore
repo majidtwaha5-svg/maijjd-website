@@ -1,31 +1,39 @@
-# Exclude potentially problematic files
+# Root Railway ignore to minimize snapshot size and focus on backend only
+
+# Node and build artifacts
 node_modules/
-package-lock.json
+**/node_modules/
 *.log
-.env
-.env.local
-.env.production
-.env.development
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 .DS_Store
-Thumbs.db
-*.swp
-*.swo
-.vscode/
-.idea/
-.git/
-*.md
-docs/
+
+# Frontend app (deployed elsewhere)
+frontend_maijjd/
+
+# Large reports and assets
 lighthouse-reports/
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-*.ico
-*.pdf
-*.doc
-*.docx
-*.txt
+lighthouse-reports-desktop.json
+lighthouse-reports-mobile.json
+**/*.report.html
+**/*.report.json
+assets/
+logs/
+monitoring/
+
+# Misc large/unused during backend deploy
+maijd_software/
+cloud-deployment/
+ssl/
+data/
+docs/
+
+# Archives and binaries
 *.zip
+*.tar
 *.tar.gz
-*.rar
+*.tgz
+
+# Keep backend code
+# NOTE: Do NOT ignore backend_maijjd/
