@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "installCommand": "npm install",
+  "buildCommand": "cd frontend_maijjd && npm install && npm run build",
+  "outputDirectory": "frontend_maijjd/build",
+  "installCommand": "cd frontend_maijjd && npm install",
   "framework": "create-react-app",
   "routes": [
     {
@@ -23,5 +23,3 @@
     }
   }
 }
-
-
