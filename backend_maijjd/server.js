@@ -6,7 +6,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
+const path = require('path');
+const https = require('https');
+const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
+
 // Robust swagger loader for different deploy roots (e.g., /app vs /app/backend_maijjd)
 let swaggerDocument;
 try {
@@ -25,22 +29,38 @@ try {
     };
   }
 }
-const path = require('path');
-const https = require('https');
-const fs = require('fs');
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const softwareRoutes = require('./routes/software');
-const servicesRoutes = require('./routes/services');
-const contactRoutes = require('./routes/contact');
-const usersRoutes = require('./routes/users');
-const aiIntegrationRoutes = require('./routes/ai-integration');
-const paymentsRoutes = require('./routes/payments');
+// Import routes with error handling
+let authRoutes, softwareRoutes, servicesRoutes, contactRoutes, usersRoutes, aiIntegrationRoutes, paymentsRoutes;
+
+try {
+  authRoutes = require('./routes/auth');
+  softwareRoutes = require('./routes/software');
+  servicesRoutes = require('./routes/services');
+  contactRoutes = require('./routes/contact');
+  usersRoutes = require('./routes/users');
+  aiIntegrationRoutes = require('./routes/ai-integration');
+  paymentsRoutes = require('./routes/payments');
+} catch (error) {
+  console.warn('⚠️  Some routes could not be loaded:', error.message);
+  // Create empty route handlers to prevent crashes
+  authRoutes = express.Router();
+  softwareRoutes = express.Router();
+  servicesRoutes = express.Router();
+  contactRoutes = express.Router();
+  usersRoutes = express.Router();
+  aiIntegrationRoutes = express.Router();
+  paymentsRoutes = express.Router();
+}
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 const HTTPS_PORT = process.env.HTTPS_PORT || 5002;
+
+// Simple early health check for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Server is running' });
+});
 
 // Enhanced Security Middleware
 app.use(helmet({
