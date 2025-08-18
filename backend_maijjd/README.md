@@ -49,7 +49,6 @@ cp env.example .env
 - **express** - Web framework
 - **cors** - Cross-origin resource sharing
 - **helmet** - Security headers
-- **compression** - Response compression
 - **dotenv** - Environment variables
 
 ## 🏗️ Project Structure
