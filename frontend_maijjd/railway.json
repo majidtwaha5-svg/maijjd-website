@@ -10,6 +10,26 @@
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "REACT_APP_API_URL": "https://maijjd-backend-production-ad65.up.railway.app/api",
+        "REACT_APP_ENVIRONMENT": "production",
+        "GENERATE_SOURCEMAP": "false",
+        "REACT_APP_ANALYTICS_ID": "your_analytics_id",
+        "REACT_APP_SENTRY_DSN": "your_sentry_dsn"
+      }
+    },
+    "staging": {
+      "variables": {
+        "NODE_ENV": "production",
+        "REACT_APP_API_URL": "https://your-staging-backend.railway.app/api",
+        "REACT_APP_ENVIRONMENT": "staging",
+        "GENERATE_SOURCEMAP": "true"
+      }
+    }
   }
 }
 

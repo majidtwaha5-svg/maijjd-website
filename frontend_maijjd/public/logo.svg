@@ -1,5 +1,75 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="128" fill="#2563EB"/>
-  <path d="M128 128h256v64H128v-64zm0 128h256v64H128v-64zm0 128h128v64H128v-64z" fill="white"/>
-  <circle cx="384" cy="384" r="32" fill="white"/>
+  <!-- Dark gray background -->
+  <rect width="512" height="512" fill="#2D3748"/>
+  
+  <!-- Circuit board elements above text -->
+  <g fill="#4ADE80">
+    <!-- Top circuit lines -->
+    <path d="M120 180 L200 180 L200 190 L120 190 Z"/>
+    <path d="M220 180 L300 180 L300 190 L220 190 Z"/>
+    <path d="M320 180 L400 180 L400 190 L320 190 Z"/>
+    
+    <!-- Top circuit dots -->
+    <circle cx="140" cy="185" r="3"/>
+    <circle cx="240" cy="185" r="3"/>
+    <circle cx="340" cy="185" r="3"/>
+    <circle cx="380" cy="185" r="3"/>
+    
+    <!-- Top connecting lines -->
+    <path d="M143 185 L157 185" stroke="#4ADE80" stroke-width="2"/>
+    <path d="M243 185 L257 185" stroke="#4ADE80" stroke-width="2"/>
+    <path d="M343 185 L357 185" stroke="#4ADE80" stroke-width="2"/>
+  </g>
+  
+  <!-- Circuit board elements below text -->
+  <g fill="#60A5FA">
+    <!-- Bottom circuit lines -->
+    <path d="M120 320 L200 320 L200 330 L120 330 Z"/>
+    <path d="M220 320 L300 320 L300 330 L220 330 Z"/>
+    <path d="M320 320 L400 320 L400 330 L320 330 Z"/>
+    
+    <!-- Bottom circuit dots -->
+    <circle cx="140" cy="325" r="3"/>
+    <circle cx="240" cy="325" r="3"/>
+    <circle cx="340" cy="325" r="3"/>
+    <circle cx="380" cy="325" r="3"/>
+    
+    <!-- Bottom connecting lines -->
+    <path d="M143 325 L157 325" stroke="#60A5FA" stroke-width="2"/>
+    <path d="M243 325 L257 325" stroke="#60A5FA" stroke-width="2"/>
+    <path d="M343 325 L357 325" stroke="#60A5FA" stroke-width="2"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#06B6D4"/>
+    </linearGradient>
+    
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- MIA text (BLUE gradient) -->
+  <g fill="url(#blueGradient)">
+    <!-- M -->
+    <path d="M200 200 L200 240 L210 220 L220 240 L220 200 L230 200 L230 250 L220 250 L210 230 L200 250 L190 250 L190 200 Z"/>
+    <!-- I -->
+    <path d="M240 200 L250 200 L250 250 L240 250 Z"/>
+    <!-- A -->
+    <path d="M260 250 L270 200 L280 200 L290 250 L285 250 L283 245 L267 245 L265 250 Z M270 205 L275 235 L280 205 Z"/>
+  </g>
+  
+  <!-- JJD text (GREEN gradient) -->
+  <g fill="url(#greenGradient)">
+    <!-- J -->
+    <path d="M200 260 L210 260 L210 290 L200 290 L200 285 L205 285 L205 265 L200 265 Z"/>
+    <!-- J -->
+    <path d="M220 260 L230 260 L230 290 L220 290 L220 285 L225 285 L225 265 L220 265 Z"/>
+    <!-- D -->
+    <path d="M240 260 L250 260 L250 290 L240 290 Z M240 260 L260 260 L260 265 L250 265 L250 285 L260 285 L260 290 L240 290 Z"/>
+  </g>
 </svg>
