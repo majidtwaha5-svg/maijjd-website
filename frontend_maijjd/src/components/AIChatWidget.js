@@ -121,11 +121,18 @@ How can I help you today?`,
     ];
 
     const softwareSpecificSuggestions = {
-      'Maijjd AI Hub': [
-        'How do I set up AI models?',
+      'Maijjd MNJD, MJ, and Team Hub': [
+        'How do I set up MJND models?',
         'How do I create automation workflows?',
-        'How do I monitor AI performance?',
-        'How do I integrate with external AI services?'
+        'How do I monitor MJND performance?',
+        'How do I integrate with external services?'
+      ],
+      'Maijjd AI Hub': [
+        // Backward-compatibility mapping
+        'How do I set up MJND models?',
+        'How do I create automation workflows?',
+        'How do I monitor MJND performance?',
+        'How do I integrate with external services?'
       ],
       'Maijjd CRM Pro': [
         'How do I manage customer data?',

@@ -7,8 +7,8 @@ const { verifyToken } = require('../middleware/auth');
 const softwareData = [
   {
     id: 1,
-    name: "Maijjd AI Hub",
-    description: "Advanced AI-powered software management platform with intelligent automation, machine learning capabilities, and real-time analytics. Features include predictive maintenance, automated workflows, and intelligent resource allocation.",
+    name: "Maijjd MNJD, MJ, and Team Hub",
+    description: "Advanced MNJD, MJ, and Team-powered software management platform with intelligent automation, model capabilities, and real-time analytics. Features include predictive maintenance, automated workflows, and intelligent resource allocation.",
     version: "2.1.0",
     price: "$299/month",
     category: "AI & Automation",
@@ -23,14 +23,14 @@ const softwareData = [
       "Multi-Platform Support"
     ],
     specifications: {
-      "AI Capabilities": "GPT-4 Integration, Custom ML Models",
+      "MNJD Capabilities": "GPT-4 Integration, Custom Models",
       "Performance": "99.9% Uptime, <100ms Response Time",
       "Security": "End-to-End Encryption, OAuth 2.0, JWT",
       "Scalability": "Auto-scaling, Load Balancing",
       "Integration": "REST API, Webhooks, WebSocket",
       "Compliance": "GDPR, SOC 2, ISO 27001"
     },
-    image: "/images/ai-hub.jpg",
+    image: "/images/mnjd-hub.jpg",
     downloads: 15420,
     status: "Active",
     rating: 4.8,

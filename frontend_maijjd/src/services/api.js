@@ -276,7 +276,7 @@ class ApiService {
       }
       
       if (!software || typeof software !== 'string') {
-        software = 'Maijjd AI Hub'; // Default software
+        software = 'Maijjd MNJD, MJ, and Team Hub'; // Default software
       }
 
       // Try authenticated chat first
@@ -325,7 +325,7 @@ class ApiService {
     }
     
     if (!software || typeof software !== 'string') {
-      software = 'Maijjd AI Hub'; // Default software
+      software = 'Maijjd MNJD, MJ, and Team Hub'; // Default software
     }
     
     return this.post('/ai/demo/chat', { message, software, context });
