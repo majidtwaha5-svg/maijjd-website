@@ -21,6 +21,13 @@ const Navbar = () => {
     { name: 'Contact', href: '/contact' },
     { name: 'MJND Chat Assistant', href: '/ai-chat' },
   ];
+  const adminNav = [
+    { name: 'Sessions', href: '/admin/sessions' },
+    { name: 'Feedback', href: '/admin/feedback' },
+    { name: 'Invoices', href: '/admin/invoices' },
+    { name: 'Tracking', href: '/admin/tracking' },
+    { name: 'Users', href: '/admin/users' },
+  ];
 
   const isActive = (path) => location.pathname === path;
 
@@ -65,6 +72,17 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+
+            {/* Admin menu (hidden from non-admins) */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <div className="ml-4 flex items-center space-x-2">
+                {adminNav.map(item => (
+                  <Link key={item.name} to={item.href} className={`px-2 py-1 rounded text-xs border ${isActive(item.href)?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700 border-gray-300'}`}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
             
             {/* Authentication */}
             {isAuthenticated ? (
@@ -123,6 +141,16 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+
+            {isAuthenticated && user?.role === 'admin' && (
+              <div className="mt-2 border-t border-gray-200 pt-2">
+                {adminNav.map(item => (
+                  <Link key={item.name} to={item.href} className={`block px-3 py-2 rounded-md text-base font-medium ${isActive(item.href)?'text-blue-600 bg-blue-50':'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`} onClick={()=>setIsOpen(false)}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
             
             {/* Mobile Authentication */}
             <div className="pt-4 border-t border-gray-200">

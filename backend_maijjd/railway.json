@@ -11,6 +11,7 @@
     "restartPolicyMaxRetries": 3
   },
   "variables": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "PORT": "5001"
   }
 }

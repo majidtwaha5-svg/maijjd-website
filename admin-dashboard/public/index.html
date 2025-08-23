@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maijjd Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+        <body class="bg-gray-50 dark:bg-gray-700 transition-colors">
+    <!-- Login Form -->
+    <div id="loginForm" class="min-h-screen flex items-center justify-center gradient-bg">
+                        <div class="bg-white dark:bg-gray-600 p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-500">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">🎯 Maijjd Admin</h1>
+                <p class="text-gray-600 dark:text-gray-200">Website Control Panel & Analytics</p>
+            </div>
+            
+            <form id="loginFormElement" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
+                    <input type="email" id="email" value="admin@maijjd.com" required 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" value="admin123" required 
+                               class="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <button type="button" id="togglePassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300">
+                            <svg id="eyeIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <svg id="eyeSlashIcon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Sign In
+                </button>
+            </form>
+            
+            <div id="loginError" class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-700 dark:text-red-300 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-600 shadow-sm border-b border-gray-200 dark:border-gray-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🎯 Maijjd Admin Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="darkModeToggle" class="flex items-center space-x-1 px-2 py-1 rounded-md bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 transition-colors border border-blue-300 dark:border-blue-600 shadow-sm">
+                            <svg id="sunIcon" class="h-4 w-4 text-blue-600 dark:text-blue-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <svg id="moonIcon" class="h-4 w-4 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                            <span id="darkModeText" class="text-xs font-medium text-blue-600 dark:text-blue-300">Dark</span>
+                        </button>
+                        <span id="userInfo" class="text-sm text-gray-600 dark:text-gray-300"></span>
+                        <button id="logoutBtn" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8">
+                    <button class="nav-tab active py-4 px-1 border-b-2 border-blue-500 text-blue-600 dark:text-blue-400" data-tab="overview">
+                        📊 Overview
+                    </button>
+                    <button class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" data-tab="analytics">
+                        📈 Analytics
+                    </button>
+                    <button class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" data-tab="feedback">
+                        💬 Feedback
+                    </button>
+                    <button class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" data-tab="tracking">
+                        📍 Live Tracking
+                    </button>
+                    <button class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" data-tab="invoices">
+                        💰 Invoices
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-gray-900">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 card-hover transition-all">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                <span class="text-2xl">👥</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Active Sessions</p>
+                                <p id="activeSessions" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 card-hover transition-all">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                                <span class="text-2xl">📄</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Page Views (30d)</p>
+                                <p id="pageViews30d" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 card-hover transition-all">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                                <span class="text-2xl">🎯</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Conversion Rate</p>
+                                <p id="conversionRate" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 card-hover transition-all">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                                <span class="text-2xl">💬</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">New Feedback</p>
+                                <p id="newFeedback" class="text-2xl font-bold text-gray-900 dark:text-white">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Pages</h3>
+                        <div id="topPages" class="space-y-3">
+                            <div class="text-gray-500 dark:text-white text-center py-8">Loading page data...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Device Analytics</h3>
+                        <canvas id="deviceChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="tab-content hidden">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Real-time Analytics</h3>
+                    <div id="realtimeData" class="text-gray-500 dark:text-white text-center py-8">Loading real-time analytics...</div>
+                </div>
+            </div>
+
+            <!-- Feedback Tab -->
+            <div id="feedbackTab" class="tab-content hidden">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customer Feedback</h3>
+                    <div id="feedbackList" class="space-y-4">
+                        <div class="text-gray-500 dark:text-white text-center py-8">Loading feedback data...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking Tab -->
+            <div id="trackingTab" class="tab-content hidden">
+                <div class="space-y-6">
+                    <!-- Live Visitors -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📍 Live Visitor Tracking</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                        <div id="liveVisitors" class="text-3xl font-bold text-blue-600 dark:text-blue-200">-</div>
+                        <div class="text-sm text-blue-800 dark:text-blue-100 font-medium">Live Visitors</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                        <div id="livePageViews" class="text-3xl font-bold text-green-600 dark:text-green-200">-</div>
+                        <div class="text-sm text-green-800 dark:text-green-100 font-medium">Page Views (Last Hour)</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                        <div id="liveCountries" class="text-3xl font-bold text-purple-600 dark:text-purple-200">-</div>
+                        <div class="text-sm text-purple-800 dark:text-purple-100 font-medium">Countries Active</div>
+                    </div>
+                </div>
+                        <div id="liveTrackingData" class="text-gray-500 dark:text-white text-center py-8">Loading live tracking data...</div>
+                    </div>
+
+                    <!-- Session Tracking -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📊 Session Analytics</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-medium text-gray-700 dark:text-white mb-3">Current Sessions</h4>
+                                <div id="currentSessions" class="space-y-2">
+                                    <div class="text-gray-500 dark:text-white text-center py-4">Loading sessions...</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 dark:text-white mb-3">Recent Page Views</h4>
+                                <div id="recentPageViews" class="space-y-2">
+                                    <div class="text-gray-500 dark:text-white text-center py-4">Loading page views...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geographic Tracking -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">🌍 Geographic Distribution</h3>
+                        <div id="geoTracking" class="text-gray-500 dark:text-white text-center py-8">Loading geographic data...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Tab -->
+            <div id="invoicesTab" class="tab-content hidden">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Invoice Management</h3>
+                    <div id="invoiceList" class="space-y-4">
+                        <div class="text-gray-500 dark:text-white text-center py-8">Loading invoice data...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let authToken = null;
+        let socket = null;
+
+        // Dark mode functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const darkModeText = document.getElementById('darkModeText');
+        
+        // Check for saved dark mode preference or default to light mode
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        console.log('Initial dark mode state:', isDarkMode);
+        
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+            darkModeText.textContent = 'Light';
+                             document.body.style.backgroundColor = '#374151'; // Lighter dark background
+                 console.log('Dark mode applied on load');
+        } else {
+            document.documentElement.classList.remove('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+            darkModeText.textContent = 'Dark';
+            document.body.style.backgroundColor = '#f9fafb'; // Light background
+            console.log('Light mode applied on load');
+        }
+        
+        // Dark mode toggle
+        darkModeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+            console.log('Dark mode toggled:', isDark ? 'ON' : 'OFF');
+            
+            // Add visual feedback
+            if (isDark) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                darkModeText.textContent = 'Light';
+                                 document.body.style.backgroundColor = '#374151'; // Lighter dark background
+                 console.log('Dark mode activated - background changed');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                darkModeText.textContent = 'Dark';
+                document.body.style.backgroundColor = '#f9fafb'; // Light background
+                console.log('Light mode activated - background changed');
+            }
+        });
+
+        // Login functionality
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Signing In...';
+            document.getElementById('loginError').classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    document.getElementById('userInfo').textContent = `Welcome, ${data.data.admin.name}`;
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    showLoginError(data.error || 'Invalid credentials. Please try again.');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showLoginError('Cannot connect to server. Please check if the admin dashboard is running.');
+                } else {
+                    showLoginError('Login failed. Please try again.');
+                }
+            } finally {
+                // Reset button state
+                submitButton.disabled = false;
+                submitButton.textContent = 'Sign In';
+            }
+        });
+
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.nav-tab').forEach(t => {
+                    t.classList.remove('active', 'border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                    t.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-300');
+                });
+                
+                // Add active class to clicked tab
+                tab.classList.add('active', 'border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                tab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-300');
+                
+                // Show corresponding content
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabName + 'Tab').classList.remove('hidden');
+                
+                // Load tab-specific data
+                if (tabName === 'analytics') loadAnalyticsData();
+                if (tabName === 'feedback') loadFeedbackData();
+                if (tabName === 'tracking') loadTrackingData();
+                if (tabName === 'invoices') loadInvoiceData();
+            });
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            authToken = null;
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('loginError').classList.add('hidden');
+        });
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard/overview', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateDashboardMetrics(data.data);
+                }
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        function updateDashboardMetrics(data) {
+            document.getElementById('activeSessions').textContent = data.sessions.active || 0;
+            document.getElementById('pageViews30d').textContent = data.sessions.last30Days || 0;
+            document.getElementById('conversionRate').textContent = (data.conversion.rate || 0) + '%';
+            document.getElementById('newFeedback').textContent = data.feedback?.byType?.length || 0;
+            
+            // Update top pages
+            const topPagesDiv = document.getElementById('topPages');
+            if (data.topPages && data.topPages.length > 0) {
+                topPagesDiv.innerHTML = data.topPages.slice(0, 5).map(page => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span class="text-sm font-medium text-gray-900">${page.title || page.url}</span>
+                        <span class="text-sm text-gray-600">${page.views} views</span>
+                    </div>
+                `).join('');
+            }
+            
+            // Update device chart
+            if (data.devices && data.devices.length > 0) {
+                updateDeviceChart(data.devices);
+            }
+        }
+
+        function updateDeviceChart(devices) {
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: devices.map(d => d._id || 'Unknown'),
+                    datasets: [{
+                        data: devices.map(d => d.count),
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load analytics data
+        async function loadAnalyticsData() {
+            const realtimeDiv = document.getElementById('realtimeData');
+            realtimeDiv.innerHTML = '<div class="text-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2">Loading real-time data...</p></div>';
+            
+            try {
+                const response = await fetch('/api/analytics/realtime', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    realtimeDiv.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">${data.data.activeSessions}</div>
+                                <div class="text-sm text-blue-800">Active Sessions</div>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">${data.data.sessions24Hours}</div>
+                                <div class="text-sm text-green-800">Sessions (24h)</div>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">${data.data.currentPageViews.length}</div>
+                                <div class="text-sm text-purple-800">Current Page Views</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                realtimeDiv.innerHTML = '<div class="text-red-600">Failed to load real-time data</div>';
+            }
+        }
+
+        // Load feedback data
+        async function loadFeedbackData() {
+            const feedbackDiv = document.getElementById('feedbackList');
+            feedbackDiv.innerHTML = '<div class="text-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2">Loading feedback...</p></div>';
+            
+            try {
+                const response = await fetch('/api/feedback', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.data.feedback && data.data.feedback.length > 0) {
+                        feedbackDiv.innerHTML = data.data.feedback.map(feedback => `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-semibold text-gray-900">${feedback.feedback.subject}</h4>
+                                    <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(feedback.status.current)}">${feedback.status.current}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">${feedback.feedback.message.substring(0, 100)}...</p>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span>${feedback.customerInfo.name} (${feedback.customerInfo.email})</span>
+                                    <span>${new Date(feedback.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        feedbackDiv.innerHTML = '<div class="text-gray-500 text-center py-8">No feedback found</div>';
+                    }
+                }
+            } catch (error) {
+                feedbackDiv.innerHTML = '<div class="text-red-600">Failed to load feedback</div>';
+            }
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'new': 'bg-blue-100 text-blue-800',
+                'reviewing': 'bg-yellow-100 text-yellow-800',
+                'resolved': 'bg-green-100 text-green-800',
+                'closed': 'bg-gray-100 text-gray-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Load tracking data
+        async function loadTrackingData() {
+            const liveVisitorsDiv = document.getElementById('liveVisitors');
+            const livePageViewsDiv = document.getElementById('livePageViews');
+            const liveCountriesDiv = document.getElementById('liveCountries');
+            const liveTrackingDataDiv = document.getElementById('liveTrackingData');
+            const currentSessionsDiv = document.getElementById('currentSessions');
+            const recentPageViewsDiv = document.getElementById('recentPageViews');
+            const geoTrackingDiv = document.getElementById('geoTracking');
+            
+            try {
+                // Load real-time analytics data
+                const response = await fetch('/api/analytics/realtime', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update live visitor stats
+                    liveVisitorsDiv.textContent = data.data.activeSessions;
+                    livePageViewsDiv.textContent = data.data.sessions24Hours;
+                    liveCountriesDiv.textContent = data.data.geographicDistribution.length;
+                    
+                    // Update live tracking data
+                    liveTrackingDataDiv.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <h4 class="font-medium text-gray-700 mb-2">Active Sessions</h4>
+                                <p class="text-2xl font-bold text-blue-600">${data.data.activeSessions}</p>
+                                <p class="text-sm text-gray-500">Currently browsing your website</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <h4 class="font-medium text-gray-700 mb-2">24h Sessions</h4>
+                                <p class="text-2xl font-bold text-green-600">${data.data.sessions24Hours}</p>
+                                <p class="text-sm text-gray-500">Sessions in the last 24 hours</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Update current sessions
+                    currentSessionsDiv.innerHTML = `
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-blue-800">Active Sessions</span>
+                                <span class="text-lg font-bold text-blue-600">${data.data.activeSessions}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Update recent page views
+                    if (data.data.currentPageViews && data.data.currentPageViews.length > 0) {
+                        recentPageViewsDiv.innerHTML = data.data.currentPageViews.slice(0, 5).map(page => `
+                            <div class="p-3 bg-gray-50 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">${page._id}</span>
+                                    <span class="text-sm text-gray-600">${page.views} views</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        recentPageViewsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">No recent page views</div>';
+                    }
+                    
+                    // Update geographic tracking
+                    if (data.data.geographicDistribution && data.data.geographicDistribution.length > 0) {
+                        geoTrackingDiv.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                ${data.data.geographicDistribution.map(geo => `
+                                    <div class="p-4 bg-gray-50 rounded-lg text-center">
+                                        <div class="text-lg font-bold text-gray-900">${geo._id || 'Unknown'}</div>
+                                        <div class="text-sm text-gray-600">${geo.count} visitors</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        geoTrackingDiv.innerHTML = '<div class="text-gray-500 text-center py-4">No geographic data available</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load tracking data:', error);
+                liveTrackingDataDiv.innerHTML = '<div class="text-red-600">Failed to load tracking data</div>';
+            }
+        }
+
+        // Load invoice data
+        async function loadInvoiceData() {
+            const invoiceDiv = document.getElementById('invoiceList');
+            invoiceDiv.innerHTML = '<div class="text-center"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2">Loading invoices...</p></div>';
+            
+            try {
+                const response = await fetch('/api/invoices', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.data.invoices && data.data.invoices.length > 0) {
+                        invoiceDiv.innerHTML = data.data.invoices.map(invoice => `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-semibold text-gray-900">${invoice.invoiceId}</h4>
+                                    <span class="px-2 py-1 text-xs rounded-full ${getInvoiceStatusColor(invoice.status.current)}">${invoice.status.current}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">${invoice.customer.name} - ${invoice.customer.email}</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="font-semibold">$${invoice.billing.totalAmount}</span>
+                                    <span class="text-gray-500">${new Date(invoice.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        invoiceDiv.innerHTML = '<div class="text-gray-500 text-center py-8">No invoices found</div>';
+                    }
+                }
+            } catch (error) {
+                invoiceDiv.innerHTML = '<div class="text-red-600">Failed to load invoices</div>';
+            }
+        }
+
+        function getInvoiceStatusColor(status) {
+            const colors = {
+                'draft': 'bg-gray-100 text-gray-800',
+                'sent': 'bg-blue-100 text-blue-800',
+                'paid': 'bg-green-100 text-green-800',
+                'overdue': 'bg-red-100 text-red-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Initialize socket connection
+        function initSocket() {
+            socket = io();
+            socket.on('connect', () => {
+                console.log('Connected to admin dashboard');
+                socket.emit('join-admin');
+            });
+            
+            socket.on('analytics-update', (data) => {
+                console.log('Analytics update:', data);
+                // Update real-time data if on analytics tab
+                if (document.getElementById('analyticsTab').classList.contains('hidden') === false) {
+                    loadAnalyticsData();
+                }
+            });
+        }
+
+        // Password toggle functionality
+        document.getElementById('togglePassword').addEventListener('click', () => {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeSlashIcon = document.getElementById('eyeSlashIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeSlashIcon.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeSlashIcon.classList.add('hidden');
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initSocket();
+            
+            // Clear any existing error messages when page loads
+            document.getElementById('loginError').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

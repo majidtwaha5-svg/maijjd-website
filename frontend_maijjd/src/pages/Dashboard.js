@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
 import { 
   Code, 
@@ -17,8 +18,10 @@ import {
   Edit,
   Wrench
 } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     totalProjects: 12,
     activeUsers: 156,
@@ -27,6 +30,11 @@ const Dashboard = () => {
   });
   const [showDevelopmentEnvironment, setShowDevelopmentEnvironment] = useState(false);
   const [selectedToolForDev, setSelectedToolForDev] = useState(null);
+  const [adminMetrics, setAdminMetrics] = useState(null);
+  const [metricsSeries, setMetricsSeries] = useState({ pv: [], su: [], rv: [] });
+  const [adminTab, setAdminTab] = useState('overview');
+  const [adminData, setAdminData] = useState({ sessions: [], feedback: [], invoices: [], events: [] });
+  const [adminLoading, setAdminLoading] = useState(false);
 
   const [recentActivity] = useState([
     {
@@ -64,6 +72,51 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch admin metrics when an admin is logged in
+  useEffect(() => {
+    let mounted = true;
+    async function loadAdminMetrics() {
+      try {
+        if (user && user.role === 'admin') {
+          const res = await apiService.get('/admin/metrics');
+          const payload = res?.data || res;
+          if (mounted) {
+            setAdminMetrics(payload);
+            const pv = (payload.dailyPageViews||[]).map(x=>({ d:x.d, c:Number(x.c||0) }));
+            const su = (payload.dailySignups||[]).map(x=>({ d:x.d, c:Number(x.c||0) }));
+            const rv = (payload.dailyRevenue||[]).map(x=>({ d:x.d, s:Number(x.s||0) }));
+            setMetricsSeries({ pv, su, rv });
+          }
+        }
+      } catch (_) {
+        // silently ignore on non-admins or network errors
+      }
+    }
+    loadAdminMetrics();
+    return () => { mounted = false; };
+  }, [user]);
+
+  const loadAdminTab = async (tab) => {
+    try {
+      if (!user || user.role !== 'admin') return;
+      setAdminLoading(true);
+      let res;
+      if (tab === 'sessions') res = await apiService.get('/admin/sessions');
+      if (tab === 'feedback') res = await apiService.get('/admin/feedback');
+      if (tab === 'invoices') res = await apiService.get('/admin/invoices');
+      if (tab === 'tracking') res = await apiService.get('/admin/tracking');
+      const payload = res?.data || res;
+      setAdminData((prev) => ({
+        ...prev,
+        [tab === 'tracking' ? 'events' : tab]: payload?.data || payload || [],
+      }));
+    } catch (e) {
+      // ignore
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
   const quickActions = [
     {
       title: 'Create Project',
@@ -97,7 +150,7 @@ const Dashboard = () => {
 
   const aiTools = [
     {
-      title: 'AI Coding Assistant',
+      title: 'MNJD, MJ, and Team Coding Assistant',
       description: 'Intelligent code generation and debugging',
       icon: <Brain className="h-8 w-8" />,
       link: '/ai-development',
@@ -106,8 +159,8 @@ const Dashboard = () => {
       toolType: 'coding'
     },
     {
-      title: 'AI Editing Suite',
-      description: 'AI-powered content creation and editing',
+      title: 'MNJD, MJ, and Team Editing Suite',
+      description: 'MNJD, MJ, and Team-powered content creation and editing',
       icon: <Edit className="h-8 w-8" />,
       link: '/ai-development',
       color: 'bg-gradient-to-r from-green-500 to-emerald-600',
@@ -115,8 +168,8 @@ const Dashboard = () => {
       toolType: 'editing'
     },
     {
-      title: 'AI Development Tools',
-      description: 'Complete AI development environment',
+      title: 'MNJD, MJ, and Team Development Tools',
+      description: 'Complete MNJD, MJ, and Team development environment',
       icon: <Wrench className="h-8 w-8" />,
       link: '/ai-development',
       color: 'bg-gradient-to-r from-purple-500 to-pink-600',
@@ -153,7 +206,7 @@ const Dashboard = () => {
           message = 'Analyze development requirements and provide technical insights';
           break;
         default:
-          message = 'Provide AI-powered assistance and recommendations';
+          message = 'Provide MNJD, MJ, and Team-powered assistance and recommendations';
       }
 
       // Use API service instead of direct fetch
@@ -163,10 +216,10 @@ const Dashboard = () => {
         ai_model: 'gpt-4'
       });
 
-      alert(`🤖 AI ${toolType.charAt(0).toUpperCase() + toolType.slice(1)} Tool:\n\n${result.content || 'AI tool ready to assist you!'}`);
+      alert(`🤖 MNJD, MJ, and Team ${toolType.charAt(0).toUpperCase() + toolType.slice(1)} Tool:\n\n${result.content || 'MNJD, MJ, and Team tool ready to assist you!'}`);
     } catch (error) {
-      console.error('Error accessing AI tool:', error);
-      alert('❌ Error accessing AI tool. Please try again.');
+      console.error('Error accessing MNJD, MJ, and Team tool:', error);
+      alert('❌ Error accessing MNJD, MJ, and Team tool. Please try again.');
     }
   };
 
@@ -222,6 +275,137 @@ const Dashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Admin Metrics */}
+        {adminMetrics && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Admin Metrics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="text-sm text-gray-500">Active Sessions</div>
+                <div className="text-2xl font-bold text-gray-900">{adminMetrics.activeSessions ?? 0}</div>
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="text-sm text-gray-500">Page Views (30d)</div>
+                <div className="text-2xl font-bold text-gray-900">{adminMetrics.pageViews30d ?? 0}</div>
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="text-sm text-gray-500">Signups (30d)</div>
+                <div className="text-2xl font-bold text-gray-900">{adminMetrics.signups30d ?? 0}</div>
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="text-sm text-gray-500">Revenue (30d)</div>
+                <div className="text-2xl font-bold text-gray-900">${(adminMetrics.revenue30d ?? 0).toLocaleString()}</div>
+              </div>
+            </div>
+            {/* Admin Tabs */}
+            <div className="mt-6">
+              <div className="flex space-x-2 mb-3">
+                {['overview','sessions','feedback','invoices','tracking'].map(t => (
+                  <button key={t} onClick={() => { setAdminTab(t); if (t!=='overview') loadAdminTab(t); }} className={`px-3 py-1 rounded text-sm border ${adminTab===t?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700 border-gray-300'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>
+                ))}
+              </div>
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                {adminTab === 'overview' && (
+                  <div>
+                    <div className="text-sm text-gray-700 mb-3">Use the tabs to view Sessions, Feedback, Invoices, and Tracking.</div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                      <div className="border rounded p-3">
+                        <div className="text-sm font-semibold mb-2">Page Views (30d)</div>
+                        <div className="h-48">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={metricsSeries.pv} margin={{ top: 5, right: 10, bottom: 0, left: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="d" tick={{ fontSize: 10 }} hide/>
+                              <YAxis tick={{ fontSize: 10 }} width={30}/>
+                              <Tooltip />
+                              <Line type="monotone" dataKey="c" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      <div className="border rounded p-3">
+                        <div className="text-sm font-semibold mb-2">Signups (30d)</div>
+                        <div className="h-48">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={metricsSeries.su} margin={{ top: 5, right: 10, bottom: 0, left: 0 }}>
+                              <defs>
+                                <linearGradient id="colorSu" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="d" tick={{ fontSize: 10 }} hide/>
+                              <YAxis tick={{ fontSize: 10 }} width={30}/>
+                              <Tooltip />
+                              <Area type="monotone" dataKey="c" stroke="#10b981" fillOpacity={1} fill="url(#colorSu)" />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      <div className="border rounded p-3">
+                        <div className="text-sm font-semibold mb-2">Revenue (30d)</div>
+                        <div className="h-48">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={metricsSeries.rv} margin={{ top: 5, right: 10, bottom: 0, left: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="d" tick={{ fontSize: 10 }} hide/>
+                              <YAxis tick={{ fontSize: 10 }} width={30}/>
+                              <Tooltip />
+                              <Line type="monotone" dataKey="s" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {adminTab === 'sessions' && (
+                  <div>
+                    {adminLoading ? <div>Loading sessions…</div> : (
+                      <table className="min-w-full text-sm">
+                        <thead><tr className="text-left"><th className="p-2">User</th><th className="p-2">IP</th><th className="p-2">Created</th></tr></thead>
+                        <tbody>
+                          {(adminData.sessions||[]).map(s => (
+                            <tr key={s.id} className="border-t"><td className="p-2">{s.userEmail}</td><td className="p-2">{s.ip}</td><td className="p-2">{s.createdAt}</td></tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
+                {adminTab === 'feedback' && (
+                  <div>
+                    {adminLoading ? <div>Loading feedback…</div> : (
+                      <ul className="divide-y">{(adminData.feedback||[]).map(f => (<li key={f.id} className="py-2"><div className="font-medium">{f.email||'anonymous'}</div><div className="text-xs text-gray-500">{f.category} • {f.createdAt}</div><div>{f.message}</div></li>))}</ul>
+                    )}
+                  </div>
+                )}
+                {adminTab === 'invoices' && (
+                  <div>
+                    {adminLoading ? <div>Loading invoices…</div> : (
+                      <table className="min-w-full text-sm">
+                        <thead><tr className="text-left"><th className="p-2">ID</th><th className="p-2">Amount</th><th className="p-2">Status</th><th className="p-2">Date</th></tr></thead>
+                        <tbody>
+                          {(adminData.invoices||[]).map(i => (
+                            <tr key={i.id} className="border-t"><td className="p-2">{i.id}</td><td className="p-2">${(i.amount||0).toLocaleString()}</td><td className="p-2">{i.status||'n/a'}</td><td className="p-2">{i.createdAt}</td></tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
+                {adminTab === 'tracking' && (
+                  <div>
+                    {adminLoading ? <div>Loading events…</div> : (
+                      <ul className="divide-y">{(adminData.events||[]).map(e => (<li key={e.id} className="py-2"><div className="font-medium">{e.event}</div><div className="text-xs text-gray-500">{new Date(e.t).toLocaleString()}</div><pre className="text-xs bg-gray-50 p-2 rounded">{JSON.stringify(e.meta||{}, null, 2)}</pre></li>))}</ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
@@ -333,7 +517,7 @@ const Dashboard = () => {
                 to="/ai-development" 
                 className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
               >
-                View All AI Tools
+                View All MNJD, MJ, and Team Tools
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </div>
@@ -409,7 +593,7 @@ const Dashboard = () => {
               <div className="flex items-center space-x-3">
                 <Code className="h-6 w-6 text-blue-600" />
                 <h2 className="text-xl font-bold text-gray-900">
-                  Development Environment - AI {selectedToolForDev.charAt(0).toUpperCase() + selectedToolForDev.slice(1)} Tools
+                  Development Environment - MNJD, MJ, and Team {selectedToolForDev.charAt(0).toUpperCase() + selectedToolForDev.slice(1)} Tools
                 </h2>
               </div>
               <button
@@ -429,20 +613,20 @@ const Dashboard = () => {
                     <h3 className="text-lg font-semibold text-gray-900">Code Editor</h3>
                     <div className="flex space-x-2">
                       <button className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200">
-                        AI Coding
+                        MNJD, MJ, and Team Coding
                       </button>
                       <button className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded hover:bg-green-200">
-                        AI Editing
+                        MNJD, MJ, and Team Editing
                       </button>
                     </div>
                   </div>
                   <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm h-64 overflow-auto">
-                    <div className="mb-2">// Welcome to AI {selectedToolForDev} Development Environment</div>
-                    <div className="mb-2">// Start coding with AI assistance</div>
-                    <div className="mb-2">// Use AI tools for code generation and optimization</div>
+                    <div className="mb-2">// Welcome to MNJD, MJ, and Team {selectedToolForDev} Development Environment</div>
+                    <div className="mb-2">// Start coding with MNJD, MJ, and Team assistance</div>
+                    <div className="mb-2">// Use MNJD, MJ, and Team tools for code generation and optimization</div>
                     <div className="mb-2"></div>
                     <div className="mb-2">function initializeAI{selectedToolForDev.charAt(0).toUpperCase() + selectedToolForDev.slice(1)}() {'{'}</div>
-                    <div className="mb-2">  // AI-powered code generation</div>
+                    <div className="mb-2">  // MNJD, MJ, and Team-powered code generation</div>
                     <div className="mb-2">  // Intelligent debugging</div>
                     <div className="mb-2">  // Automated testing</div>
                     <div className="mb-2">{'}'}</div>
@@ -452,29 +636,29 @@ const Dashboard = () => {
 
               {/* Right Panel - Tools & Terminal */}
               <div className="w-80 flex flex-col">
-                {/* AI Tools */}
+                {/* MNJD, MJ, and Team Tools */}
                 <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">AI Development Tools</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">MNJD, MJ, and Team Development Tools</h3>
                   <div className="space-y-2">
                     <button
                       onClick={() => handleAIToolAccess(selectedToolForDev)}
                       className="w-full p-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-left"
                     >
-                      <div className="font-medium">🤖 AI Coding Assistant</div>
-                      <div className="text-sm opacity-75">Generate code with AI</div>
+                      <div className="font-medium">🤖 MNJD, MJ, and Team Coding Assistant</div>
+                      <div className="text-sm opacity-75">Generate code with MNJD, MJ, and Team</div>
                     </button>
                     <button
                       onClick={() => handleAIToolAccess(selectedToolForDev)}
                       className="w-full p-3 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-left"
                     >
-                      <div className="font-medium">✏️ AI Editing Suite</div>
+                      <div className="font-medium">✏️ MNJD, MJ, and Team Editing Suite</div>
                       <div className="text-sm opacity-75">Smart code editing</div>
                     </button>
                     <button
                       onClick={() => handleAIToolAccess(selectedToolForDev)}
                       className="w-full p-3 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-left"
                     >
-                      <div className="font-medium">🔧 AI Development Tools</div>
+                      <div className="font-medium">🔧 MNJD, MJ, and Team Development Tools</div>
                       <div className="text-sm opacity-75">Advanced development features</div>
                     </button>
                   </div>
@@ -488,7 +672,7 @@ const Dashboard = () => {
                     <div className="mb-1">$ npm install</div>
                     <div className="mb-1">$ npm start</div>
                     <div className="mb-1">🚀 Development server started</div>
-                    <div className="mb-1">📱 AI tools ready</div>
+                    <div className="mb-1">📱 MNJD, MJ, and Team tools ready</div>
                   </div>
                 </div>
 

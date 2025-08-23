@@ -18,23 +18,20 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in on app start
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      // Verify token and get user profile
-      apiService.getProfile()
-        .then(response => {
-          setUser(response.data);
-        })
-        .catch(() => {
-          // Token is invalid, remove it
-          localStorage.removeItem('authToken');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+    // Attempt to fetch profile on load using either token or cookie session
+    apiService.getProfile()
+      .then(response => {
+        const payload = response?.data || response;
+        const profile = payload?.user || payload?.data?.user || payload?.profile || payload?.data?.profile || null;
+        if (profile) setUser(profile);
+      })
+      .catch(() => {
+        // If unauthorized, clear any stale tokens
+        localStorage.removeItem('authToken');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const login = async (credentials) => {
@@ -42,13 +39,23 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await apiService.login(credentials);
       const payload = response?.data || response; // backend returns {message, data:{user, authentication}}
-      const userData = payload?.user || payload?.data?.user || payload?.profile || null;
+      let userData = payload?.user || payload?.data?.user || payload?.profile || null;
       const accessToken = payload?.authentication?.accessToken || payload?.token || payload?.data?.authentication?.accessToken;
       const refreshToken = payload?.authentication?.refreshToken || payload?.data?.authentication?.refreshToken;
       
       // Store token and user data
       if (accessToken) localStorage.setItem('authToken', accessToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      // If backend uses session cookies and does not return the user, fetch the profile now
+      if (!userData) {
+        try {
+          const profileRes = await apiService.getProfile();
+          const profilePayload = profileRes?.data || profileRes;
+          userData = profilePayload?.user || profilePayload?.data?.user || profilePayload?.profile || profilePayload?.data?.profile || null;
+        } catch (_) {
+          // ignore; error will be surfaced below if userData remains null
+        }
+      }
       setUser(userData);
       
       return response;

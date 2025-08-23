@@ -163,8 +163,8 @@ app.get('/api/software', async (req, res) => {
     const rows = (await db.query('select * from software order by id asc')).rows;
     const transformed = rows.map(r => ({
       ...r,
-      name: typeof r.name === 'string' ? r.name.replace(/AI/gi, 'MNJD, MJ, and team') : r.name,
-      description: typeof r.description === 'string' ? r.description.replace(/AI/gi, 'MNJD, MJ, and team') : r.description
+      name: typeof r.name === 'string' ? r.name.replace(/AI/gi, 'MNJD, MJ, and Team') : r.name,
+      description: typeof r.description === 'string' ? r.description.replace(/AI/gi, 'MNJD, MJ, and Team') : r.description
     }));
     return res.status(200).json({ data: transformed });
   }
@@ -188,8 +188,8 @@ app.get('/api/software', async (req, res) => {
   // replace occurrences of "AI" in description with requested phrase
   const transformed = items.map(it => ({
     ...it,
-    name: typeof it.name === 'string' ? it.name.replace(/AI/gi, 'MNJD, MJ, and team') : it.name,
-    description: typeof it.description === 'string' ? it.description.replace(/AI/gi, 'MNJD, MJ, and team') : it.description
+    name: typeof it.name === 'string' ? it.name.replace(/AI/gi, 'MNJD, MJ, and Team') : it.name,
+    description: typeof it.description === 'string' ? it.description.replace(/AI/gi, 'MNJD, MJ, and Team') : it.description
   }));
   res.status(200).json({ data: transformed });
 });

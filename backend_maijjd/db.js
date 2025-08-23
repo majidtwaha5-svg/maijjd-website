@@ -76,7 +76,7 @@ async function init() {
       ['marketing-auto','Maijjd Marketing Automation','Marketing & Automation','Automation campaigns.',49,159],
       ['pm-pro','Maijjd Project Management Pro','Project Management','Project planning.',25,89],
       ['ds-studio','Maijjd Data Science Studio','Data Science & ML','ML & data platform.',199,599],
-      ['cs-ai','Maijjd Customer Support AI','Customer Support','AI helpdesk.',35,129],
+      ['cs-ai','Maijjd Customer Support MNJD, MJ, and Team','Customer Support','MNJD, MJ, and Team helpdesk.',35,129],
       ['fin-analytics','Maijjd Financial Analytics','Financial Technology','FinAnalytics.',119,349],
       ['health-analytics','Maijjd Healthcare Analytics','Healthcare Technology','Health analytics.',199,499],
       ['edu-platform','Maijjd Education Platform','Education Technology','Education platform.',25,79],

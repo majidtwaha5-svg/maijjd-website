@@ -1,0 +1,63 @@
+{
+  "name": "maijjd-admin-dashboard",
+  "version": "1.0.0",
+  "description": "Comprehensive Website Control Panel & Analytics System for Maijjd",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "npm run build:client",
+    "build:client": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install",
+    "setup": "node setup-database.js"
+  },
+  "keywords": [
+    "admin-dashboard",
+    "analytics",
+    "user-tracking",
+    "customer-management",
+    "website-control"
+  ],
+  "author": "Maijjd Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.3",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "twilio": "^4.19.0",
+    "redis": "^4.6.10",
+    "winston": "^3.11.0",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1",
+    "moment": "^2.29.4",
+    "chart.js": "^4.4.0",
+    "socket.io": "^4.7.4",
+    "geoip-lite": "^1.4.9",
+    "user-agents": "^1.0.1354",
+    "ua-parser-js": "^1.0.37",
+    "stripe": "^14.7.0",
+    "pdfkit": "^0.14.0",
+    "exceljs": "^4.4.0",
+    "sharp": "^0.32.6",
+    "qrcode": "^1.5.3",
+    "cron": "^3.1.6",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -3,6 +3,8 @@ import { Mail, MapPin, Clock, Send, Bot, CheckCircle, AlertCircle, X } from 'luc
 import { useLocation, useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
 import AIChatWidget from '../components/AIChatWidget';
+import analytics from '../services/analytics';
+import FeedbackForm from '../components/FeedbackForm';
 
 const Contact = () => {
   const location = useLocation();
@@ -20,7 +22,7 @@ const Contact = () => {
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
   const [chatOpen, setChatOpen] = useState(false);
   const [docsOpen, setDocsOpen] = useState(false);
-  const [chatSoftware, setChatSoftware] = useState({ name: 'Maijjd AI Hub' });
+  const [chatSoftware, setChatSoftware] = useState({ name: 'Maijjd MJND Hub' });
 
   // Handle pre-filling form data from navigation state
   useEffect(() => {
@@ -63,6 +65,11 @@ const Contact = () => {
     try {
       await apiService.submitContact(formData);
       setSubmitStatus('success');
+      
+      // Track successful contact form submission
+      analytics.trackContactForm();
+      analytics.trackConversion('contact_form', 0);
+      
       setFormData({
         name: '',
         email: '',
@@ -90,7 +97,7 @@ const Contact = () => {
       icon: <Bot className="h-6 w-6" />,
       title: 'MJND Assistant',
       details: '24/7 Available',
-      description: 'Get instant help from our AI system'
+      description: 'Get instant help from our MNJD, MJ, and Team system'
     },
     {
       icon: <MapPin className="h-6 w-6" />,
@@ -168,7 +175,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* AI Support Section */}
+      {/* MNJD, MJ, and Team Support Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -467,7 +474,23 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* AI Chat Widget */}
+      {/* Feedback Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Share Your Feedback
+            </h2>
+            <p className="text-xl text-gray-600">
+              Help us improve by sharing your thoughts and suggestions.
+            </p>
+          </div>
+          
+          <FeedbackForm />
+        </div>
+      </section>
+
+      {/* MNJD, MJ, and Team Chat Widget */}
       <AIChatWidget
         isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
@@ -487,13 +510,13 @@ const Contact = () => {
             >
               <X className="h-5 w-5" />
             </button>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">AI Knowledge Base</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">MNJD, MJ, and Team Knowledge Base</h3>
             <p className="text-gray-600 mb-4">
               Explore quick-start guides, API usage, deployment, and troubleshooting.
             </p>
             <div className="space-y-3 text-sm text-gray-800">
               <div>
-                <span className="font-medium">Getting Started:</span> Open the Software page and click "Start Coding" to use the full AI development environment (editor, terminal, preview, ZIP download).
+                <span className="font-medium">Getting Started:</span> Open the Software page and click "Start Coding" to use the full MNJD, MJ, and Team development environment (editor, terminal, preview, ZIP download).
               </div>
               <div>
                     <span className="font-medium">API & Backend:</span> Local API runs on http://localhost:5001. Health: /api/health. Public chat: /demo/chat.

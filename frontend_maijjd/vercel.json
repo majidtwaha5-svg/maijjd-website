@@ -8,7 +8,18 @@
     "env": {
       "CI": "false"
     }
-  }
+  },
+  "env": {
+    "REACT_APP_API_URL": "https://maijjd-backend-production-ad65.up.railway.app/api",
+    "REACT_APP_ADMIN_URL": "https://maijjd-admin.railway.app",
+    "REACT_APP_ANALYTICS_URL": "https://maijjd-backend-production-ad65.up.railway.app/api",
+    "REACT_APP_TRACKING_URL": "https://maijjd-backend-production-ad65.up.railway.app/api/tracking",
+    "REACT_APP_FEEDBACK_URL": "https://maijjd-backend-production-ad65.up.railway.app/api/feedback",
+    "REACT_APP_SOCKET_URL": "https://maijjd-backend-production-ad65.up.railway.app"
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
 
 

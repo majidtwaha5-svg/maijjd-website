@@ -207,7 +207,7 @@ const defaultSoftware = [
   },
   {
     id: 12,
-    name: 'Maijjd Customer Support MJND',
+    name: 'Maijjd Customer Support MNJD',
     description: 'Intelligent customer support platform with MJND-powered chatbots, sentiment analysis, and automated ticket routing.',
     category: 'Customer Support',
     version: '1.5.7',
@@ -294,6 +294,45 @@ const defaultSoftware = [
     icon: <Wrench className="h-8 w-8" />,
     features: ['AI Model Builder', 'Neural Network Designer', 'Data Pipeline Tools', 'MLOps Platform'],
     price: '$299/month',
+    status: 'Active'
+  },
+  {
+    id: 19,
+    name: 'Maijjd Cloud Manager',
+    description: 'Cloud resources manager for provisioning, monitoring, and cost optimization.',
+    category: 'Cloud',
+    version: '1.4.0',
+    rating: 4.7,
+    downloads: 7420,
+    icon: <Cloud className="h-8 w-8" />,
+    features: ['Resource Provisioning', 'Cost Optimization', 'Multi-Cloud Support', 'Monitoring Dashboards'],
+    price: '$349/month',
+    status: 'Active'
+  },
+  {
+    id: 20,
+    name: 'Maijjd Development Studio',
+    description: 'Dev tools and pipelines with code templates, CI/CD, and quality checks.',
+    category: 'Development',
+    version: '2.0.0',
+    rating: 4.6,
+    downloads: 10320,
+    icon: <Code className="h-8 w-8" />,
+    features: ['Project Scaffolding', 'Pipelines & CI/CD', 'Static Analysis', 'Testing Utilities'],
+    price: '$249/month',
+    status: 'Active'
+  },
+  {
+    id: 21,
+    name: 'Maijjd Web Builder Pro',
+    description: 'Professional website builder with templates, components, and deployment.',
+    category: 'Web',
+    version: '1.3.2',
+    rating: 4.5,
+    downloads: 12890,
+    icon: <Monitor className="h-8 w-8" />,
+    features: ['Drag-and-Drop Builder', 'SEO Toolkit', 'Responsive Themes', 'One-Click Deploy'],
+    price: '$179/month',
     status: 'Active'
   },
 
@@ -637,7 +676,7 @@ const Software = () => {
     // Add initial terminal output
     setTerminalOutput([
       `$ Development environment opened for ${software.name}`,
-      `$ AI tools initialized`,
+      `$ MNJD, MJ, and Team tools initialized`,
       `$ Ready to start coding`
     ]);
   };
@@ -1159,7 +1198,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>AI English Learning</h1>
+        <h1>MNJD, MJ, and Team English Learning</h1>
         <p>{` + '`' + `Prompt: ${prompt}` + '`' + `}</p>
       </header>
 
@@ -1792,7 +1831,7 @@ try { root.render(React.createElement(App)); } catch(e) { document.body.innerHTM
                         handleAIToolAccess(item, 'coding');
                       }}
                       className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded text-xs font-medium transition-all duration-200 flex items-center justify-center"
-                      title="AI Coding Assistant"
+                      title="MNJD, MJ, and Team Coding Assistant"
                     >
                       <Code className="h-3 w-3 mr-1" />
                       Code
@@ -1804,7 +1843,7 @@ try { root.render(React.createElement(App)); } catch(e) { document.body.innerHTM
                         handleAIToolAccess(item, 'editing');
                       }}
                       className="p-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded text-xs font-medium transition-all duration-200 flex items-center justify-center"
-                      title="AI Editing Suite"
+                      title="MNJD, MJ, and Team Editing Suite"
                     >
                       <Edit className="h-3 w-3 mr-1" />
                       Edit
@@ -1816,7 +1855,7 @@ try { root.render(React.createElement(App)); } catch(e) { document.body.innerHTM
                         handleAIToolAccess(item, 'development');
                       }}
                       className="p-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded text-xs font-medium transition-all duration-200 flex items-center justify-center"
-                      title="AI Development Tools"
+                      title="MNJD, MJ, and Team Development Tools"
                     >
                       <Wrench className="h-3 w-3 mr-1" />
                       Dev
@@ -2558,9 +2597,9 @@ try { root.render(React.createElement(App)); } catch(e) { document.body.innerHTM
 
               {/* Right Panel - Tools, Terminal & Preview */}
               <div className="w-96 flex flex-col overflow-y-auto" onKeyDown={(e)=>e.stopPropagation()} onClick={(e)=>e.stopPropagation()}>
-                {/* AI Development Tools */}
+                {/* MNJD, MJ, and Team Development Tools */}
                 <div className="p-4 border-b border-gray-200" onKeyDown={(e)=>e.stopPropagation()} onKeyUp={(e)=>e.stopPropagation()} onClick={(e)=>e.stopPropagation()}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">🛠️ AI Development Tools</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">🛠️ MNJD, MJ, and Team Development Tools</h3>
                   <div className="space-y-2">
                     <button
                       onClick={handleAICodeGeneration}

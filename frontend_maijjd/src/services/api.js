@@ -1,11 +1,26 @@
 // Prefer configured API; otherwise use same-origin "/api" to avoid hardcoded localhost in tunnels and prod
 const API_BASE_URL = process.env.REACT_APP_API_URL || (typeof window !== 'undefined' ? `${window.location.origin.replace(/\/$/, '')}/api` : 'http://localhost:5001/api');
 
+// Decide whether to include credentials (cookies) in cross-origin requests
+// - Include for same-origin by default
+// - Allow overriding via REACT_APP_CREDENTIALS_INCLUDE=true
+const ENV_INCLUDE_CREDENTIALS = String(process.env.REACT_APP_CREDENTIALS_INCLUDE || '').toLowerCase() === 'true';
+const IS_SAME_ORIGIN = typeof window !== 'undefined' && API_BASE_URL.startsWith(window.location.origin);
+// Default to omit credentials for cross-origin Railway backend to avoid blocked cookies
+const SHOULD_INCLUDE_CREDENTIALS = ENV_INCLUDE_CREDENTIALS || IS_SAME_ORIGIN;
+
+// Unified token read helper: prefers localStorage, falls back to sessionStorage
+function getStored(key) {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(key) || sessionStorage.getItem(key);
+}
+
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
     this.maxRetries = 3;
     this.retryDelay = 1000;
+    this.requestTimeoutMs = parseInt(process.env.REACT_APP_API_TIMEOUT_MS || '15000', 10);
   }
 
   // Generic request method with retry logic
@@ -17,7 +32,7 @@ class ApiService {
       'Accept': 'application/json',
     };
     // Inject Authorization header automatically when a token exists
-    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    const token = getStored('authToken');
     const mergedHeaders = {
       ...defaultHeaders,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -26,7 +41,7 @@ class ApiService {
     const { headers: _ignored, ...restOptions } = options || {};
     const config = {
       mode: 'cors',
-      credentials: 'include',
+      credentials: SHOULD_INCLUDE_CREDENTIALS ? 'include' : 'omit',
       ...restOptions,
       headers: mergedHeaders,
     };
@@ -44,7 +59,10 @@ class ApiService {
     
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
       try {
-        const response = await fetch(url, config);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+        const response = await fetch(url, { ...config, signal: controller.signal });
+        clearTimeout(timeoutId);
         
         console.log('📡 API Response received:', {
           status: response.status,
@@ -59,7 +77,7 @@ class ApiService {
             try {
               await this.tryRefreshTokens();
               // Update Authorization header with the new token and retry
-              const newToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+              const newToken = getStored('authToken');
               if (newToken) {
                 config.headers = { ...config.headers, Authorization: `Bearer ${newToken}` };
               }
@@ -85,10 +103,31 @@ class ApiService {
             }
           } catch (_) {}
           console.error('❌ API Response error:', errorDetail);
-          throw new Error(errorDetail);
+          const error = new Error(errorDetail);
+          // Do not retry for most client errors
+          if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+            error.noRetry = true;
+          }
+          throw error;
         }
         
-        const data = await response.json();
+        // Try to parse JSON if present; gracefully handle empty or non-JSON bodies
+        const contentType = response.headers.get('content-type') || '';
+        let data;
+        if (contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          const text = await response.text();
+          if (!text) {
+            data = {};
+          } else {
+            try {
+              data = JSON.parse(text);
+            } catch (_) {
+              data = { raw: text };
+            }
+          }
+        }
         console.log('📊 API Response data:', data);
         return data;
       } catch (error) {
@@ -99,6 +138,9 @@ class ApiService {
           stack: error.stack
         });
         
+        if (error.name === 'AbortError' || error.noRetry) {
+          break;
+        }
         if (attempt < this.maxRetries) {
           console.log(`🔄 Retrying in ${this.retryDelay}ms...`);
           await new Promise(resolve => setTimeout(resolve, this.retryDelay));
@@ -158,6 +200,20 @@ class ApiService {
     return this.post('/auth/register', userData);
   }
 
+  // Verification codes (email or phone)
+  async requestVerification(identifier) {
+    return this.post('/auth/verify/request', identifier);
+  }
+
+  async confirmVerification(code, identifier) {
+    return this.post('/auth/verify/confirm', { code, ...(identifier||{}) });
+  }
+
+  // Help users recover their account identifier by phone
+  async lookupEmailByPhone(phone) {
+    return this.post('/auth/lookup-email', { phone });
+  }
+
   async getProfile() {
     return this.get('/auth/profile');
   }
@@ -204,6 +260,8 @@ class ApiService {
     return this.get('/users');
   }
 
+  // (Removed duplicate auth methods below to satisfy linter)
+
   // Contact methods
   async submitContact(contactData) {
     return this.post('/contact', contactData);
@@ -248,7 +306,7 @@ class ApiService {
 
   // Attempt to refresh tokens using stored refreshToken
   async tryRefreshTokens() {
-    const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+    const refreshToken = getStored('refreshToken');
     if (!refreshToken) throw new Error('No refresh token');
     const res = await this.post('/auth/refresh', { refreshToken });
     const payload = res?.data || res;

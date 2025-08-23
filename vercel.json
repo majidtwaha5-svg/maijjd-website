@@ -1,12 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend_maijjd && npm install && npm run build",
-  "outputDirectory": "frontend_maijjd/build",
-  "installCommand": "cd frontend_maijjd && npm install",
+  "buildCommand": "echo 'Build already completed'",
+  "outputDirectory": ".",
+  "installCommand": "echo 'No installation needed for static files'",
   "framework": "create-react-app",
-  "build": {
-    "env": {
-      "CI": "false"
+  "routes": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "https://maijjd-backend-production-ad65.up.railway.app/api",
+    "REACT_APP_ENVIRONMENT": "production"
   }
 }

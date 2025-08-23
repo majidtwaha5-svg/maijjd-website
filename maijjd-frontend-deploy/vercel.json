@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "buildCommand": "echo \"Build already completed\"",
+  "outputDirectory": ".",
+  "installCommand": "echo \"No installation needed for static files\"",
+  "framework": "create-react-app"
+}
